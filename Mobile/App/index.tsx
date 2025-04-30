@@ -1,10 +1,15 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Button } from "react-native";
+import { Link } from "expo-router"
+
 
 export default function PaginaInicial() {
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Bem-vindo ao MotoZone!</Text>
       <Text style={styles.subtitulo}>
+        <Link href={{pathname:"/mottu", params:{moto:"Road Chopper 150", placa:"TJK4567"}}} asChild>
+        <Button title="Ir p/ Tela Mottu"/>
+        </Link>
       </Text>
     </View>
   );
@@ -29,4 +34,9 @@ const styles = StyleSheet.create({
     color: "#e5e7eb", 
     textAlign: "center",
   },
+  button: {
+    fontSize: 16,
+    color: "#e5e7eb", 
+    textAlign: "center",
+  }
 });
