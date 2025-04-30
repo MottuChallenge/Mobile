@@ -5,7 +5,6 @@ export default function PaginaInicial() {
     <View style={styles.container}>
       <Text style={styles.titulo}>Bem-vindo ao MotoZone!</Text>
       <Text style={styles.subtitulo}>
-        Teste 
       </Text>
     </View>
   );
