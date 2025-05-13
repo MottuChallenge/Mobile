@@ -1,16 +1,38 @@
-import { Link, useLocalSearchParams } from "expo-router";
-import { Text, View, StyleSheet, Button } from "react-native";
-import { Drawer } from "expo-router/drawer";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Button } from "react-native";
+import { Link } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function TelaMottu() {
-  const { nomeMoto, placa, cpf } = useLocalSearchParams();
+  const [moto, setMoto] = useState<{ nomeMoto: string; placa: string; cpf: string } | null>(null);
+
+  useEffect(() => {
+    const carregarMoto = async () => {
+      try {
+        const motoString = await AsyncStorage.getItem('@motoCadastro');
+        if (motoString) {
+          setMoto(JSON.parse(motoString)); 
+        }
+      } catch (error) {
+        console.error('Erro ao recuperar dados', error);
+      }
+    };
+
+    carregarMoto();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Moto cadastrada!</Text>
-      <Text style={styles.info}>Nome da Moto: {nomeMoto}</Text>
-      <Text style={styles.info}>Placa: {placa}</Text>
-      <Text style={styles.info}>CPF do Dono: {cpf}</Text>
+      {moto ? (
+        <>
+          <Text style={styles.title}>Moto cadastrada!</Text>
+          <Text style={styles.info}>Nome da Moto: {moto.nomeMoto}</Text>
+          <Text style={styles.info}>Placa: {moto.placa}</Text>
+          <Text style={styles.info}>CPF do Dono: {moto.cpf}</Text>
+        </>
+      ) : (
+        <Text>Carregando dados...</Text>
+      )}
 
       <Link href="/" asChild>
         <Button title="Ir p/ Tela Inicial" color="#168821" />

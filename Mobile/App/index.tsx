@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PaginaInicial() {
   const [nomeMoto, setNomeMoto] = useState("");
@@ -9,12 +10,23 @@ export default function PaginaInicial() {
 
   const router = useRouter();
 
-  const cadastrarMoto = () => {
+  const cadastrarMoto = async () => {
     if (nomeMoto && placa && cpf) {
-      router.push({
-        pathname: "/mottu",
-        params: { nomeMoto, placa, cpf }
-      });
+      // Cria um objeto para armazenar as informações
+      const moto = { nomeMoto, placa, cpf };
+
+      try {
+        // Salva as informações no AsyncStorage
+        await AsyncStorage.setItem('@motoCadastro', JSON.stringify(moto));
+        
+        // Navega para a próxima página com as informações
+        router.push({
+          pathname: "/mottu",
+          params: { nomeMoto, placa, cpf }
+        });
+      } catch (error) {
+        Alert.alert("Erro", "Falha ao salvar os dados. Tente novamente.");
+      }
     } else {
       Alert.alert("Erro", "Preencha todos os campos.");
     }
