@@ -7,8 +7,6 @@ export default function TelaMottu() {
 
   return (
     <View style={styles.container}>
-      <Drawer.Screen name="mottu" options={{ title: "Mottu" }} />
-
       <Text style={styles.title}>Moto cadastrada!</Text>
       <Text style={styles.info}>Nome da Moto: {nomeMoto}</Text>
       <Text style={styles.info}>Placa: {placa}</Text>
