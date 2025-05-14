@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "expo-router";
 
@@ -12,6 +12,38 @@ type Moto = {
 export default function ListaMotos() {
   const [motos, setMotos] = useState<Moto[]>([]);
 
+  const deletarMoto = async (placa: string) => {
+    try {
+      const novasMotos = motos.filter((moto) => moto.placa !== placa);
+      
+      setMotos(novasMotos);
+
+      await AsyncStorage.setItem("@listaMotos", JSON.stringify(novasMotos));
+
+      console.log("Moto deletada com sucesso");
+    } catch (error) {
+      console.error("Erro ao deletar moto:", error);
+    }
+  };
+
+  const confirmarDeletarMoto = (placa: string) => {
+    Alert.alert(
+      "Confirmar exclusão",
+      "Você tem certeza que deseja excluir esta moto?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: () => deletarMoto(placa),
+        },
+      ]
+    );
+  };
+
   useFocusEffect(
     useCallback(() => {
       const carregarMotos = async () => {
@@ -19,8 +51,6 @@ export default function ListaMotos() {
           const dados = await AsyncStorage.getItem("@listaMotos");
           if (dados) {
             const listaMotos: Moto[] = JSON.parse(dados);
-            console.log(listaMotos);
-            
             setMotos(listaMotos);
           }
         } catch (error) {
@@ -31,7 +61,6 @@ export default function ListaMotos() {
       carregarMotos();
     }, [])
   );
-  
 
   return (
     <View style={styles.container}>
@@ -47,6 +76,14 @@ export default function ListaMotos() {
               <Text style={styles.text}>🏍️ Nome: {item.nomeMoto}</Text>
               <Text style={styles.text}>📄 Placa: {item.placa}</Text>
               <Text style={styles.text}>👤 CPF: {item.cpf}</Text>
+
+              {/* Botão para deletar */}
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => confirmarDeletarMoto(item.placa)}
+              >
+                <Text style={styles.deleteButtonText}>Excluir</Text>
+              </TouchableOpacity>
             </View>
           )}
         />
@@ -83,5 +120,18 @@ const styles = StyleSheet.create({
   info: {
     textAlign: "center",
     color: "#777",
+  },
+  deleteButton: {
+    marginTop: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: "#FF6347",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
