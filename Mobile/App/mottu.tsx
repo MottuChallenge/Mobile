@@ -5,19 +5,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function TelaMottu() {
   const [moto, setMoto] = useState<{ nomeMoto: string; placa: string; cpf: string } | null>(null);
-
+  
   useEffect(() => {
     const carregarMoto = async () => {
       try {
-        const motoString = await AsyncStorage.getItem('@motoCadastro');
+        const motoString : string | null = await AsyncStorage.getItem('@listaMotos');
         if (motoString) {
-          setMoto(JSON.parse(motoString)); 
+          const moto : [] = JSON.parse(motoString)
+          const ultimaMoto = moto[moto.length - 1];
+          setMoto(ultimaMoto);
         }
       } catch (error) {
         console.error('Erro ao recuperar dados', error);
       }
     };
-
+    
     carregarMoto();
   }, []);
 
@@ -34,8 +36,8 @@ export default function TelaMottu() {
         <Text>Carregando dados...</Text>
       )}
 
-      <Link href="/" asChild>
-        <Button title="Ir p/ Tela Inicial" color="#168821" />
+      <Link href="/listamotos" asChild>
+        <Button title="Ir p/ Lista de Motos" color="#168821" />
       </Link>
     </View>
   );

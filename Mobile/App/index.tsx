@@ -12,20 +12,16 @@ export default function PaginaInicial() {
 
   const cadastrarMoto = async () => {
     if (nomeMoto && placa && cpf) {
-      // Cria um objeto para armazenar as informações
-      const moto = { nomeMoto, placa, cpf };
-
+      const novaMoto = { nomeMoto, placa, cpf };
+  
       try {
-        // Salva as informações no AsyncStorage
-        await AsyncStorage.setItem('@motoCadastro', JSON.stringify(moto));
-        
-        // Navega para a próxima página com as informações
-        router.push({
-          pathname: "/mottu",
-          params: { nomeMoto, placa, cpf }
-        });
+        const motosSalvas = await AsyncStorage.getItem('@listaMotos');
+        const listaMotos = motosSalvas ? JSON.parse(motosSalvas) : [];
+        listaMotos.push(novaMoto);
+        await AsyncStorage.setItem('@listaMotos', JSON.stringify(listaMotos));
+        router.push("/mottu");
       } catch (error) {
-        Alert.alert("Erro", "Falha ao salvar os dados. Tente novamente.");
+        Alert.alert("Erro", "Não foi possível salvar a moto.");
       }
     } else {
       Alert.alert("Erro", "Preencha todos os campos.");
