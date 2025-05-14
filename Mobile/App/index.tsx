@@ -31,7 +31,7 @@ export default function PaginaInicial() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bem Vindo, Cadastre a sua Moto</Text>
+      <Text style={styles.title}>Cadastre a sua Moto</Text>
 
       <TextInput
         style={styles.input}

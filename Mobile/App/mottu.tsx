@@ -35,7 +35,7 @@ export default function TelaMottu() {
           <Text style={styles.info}>CPF do Dono: {moto.cpf}</Text>
         </>
       ) : (
-        <Text>Carregando dados...</Text>
+        <Text>SEM DADOS </Text>
       )}
 
       <Link href="/listamotos" asChild>

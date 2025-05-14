@@ -15,11 +15,8 @@ export default function ListaMotos() {
   const deletarMoto = async (placa: string) => {
     try {
       const novasMotos = motos.filter((moto) => moto.placa !== placa);
-      
       setMotos(novasMotos);
-
       await AsyncStorage.setItem("@listaMotos", JSON.stringify(novasMotos));
-
       console.log("Moto deletada com sucesso");
     } catch (error) {
       console.error("Erro ao deletar moto:", error);
@@ -44,6 +41,32 @@ export default function ListaMotos() {
     );
   };
 
+  const limparLista = async () => {
+    Alert.alert(
+      "Confirmar limpeza",
+      "Você tem certeza que deseja limpar toda a lista de motos?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Limpar",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setMotos([]);
+              await AsyncStorage.removeItem("@listaMotos");
+              console.log("Lista limpa com sucesso!");
+            } catch (error) {
+              console.error("Erro ao limpar lista:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   useFocusEffect(
     useCallback(() => {
       const carregarMotos = async () => {
@@ -51,13 +74,13 @@ export default function ListaMotos() {
           const dados = await AsyncStorage.getItem("@listaMotos");
           if (dados) {
             const listaMotos: Moto[] = JSON.parse(dados);
+            console.log(listaMotos);
             setMotos(listaMotos);
           }
         } catch (error) {
           console.error("Erro ao carregar motos:", error);
         }
       };
-  
       carregarMotos();
     }, [])
   );
@@ -77,16 +100,24 @@ export default function ListaMotos() {
               <Text style={styles.text}>📄 Placa: {item.placa}</Text>
               <Text style={styles.text}>👤 CPF: {item.cpf}</Text>
 
-              {/* Botão para deletar */}
               <TouchableOpacity
                 style={styles.deleteButton}
                 onPress={() => confirmarDeletarMoto(item.placa)}
               >
-                <Text style={styles.deleteButtonText}>Excluir</Text>
+                <Text style={styles.deleteButtonText}>🗑️ Excluir</Text>
               </TouchableOpacity>
             </View>
           )}
         />
+      )}
+
+      {motos.length > 0 && (
+        <TouchableOpacity
+          style={styles.clearButton}
+          onPress={limparLista}
+        >
+          <Text style={styles.clearButtonText}>🧹 Limpar Lista</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -128,10 +159,23 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF6347",
     borderRadius: 5,
     alignItems: "center",
+    justifyContent: "center",
   },
   deleteButtonText: {
     color: "#fff",
-    fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 16,
+  },
+  clearButton: {
+    marginTop: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    backgroundColor: "#FFD700",
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  clearButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
