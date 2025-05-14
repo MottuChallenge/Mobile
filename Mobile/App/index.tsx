@@ -11,6 +11,7 @@ export default function PaginaInicial() {
   const router = useRouter();
 
   const cadastrarMoto = async () => {
+    
     if (nomeMoto && placa && cpf) {
       const novaMoto = { nomeMoto, placa, cpf };
   
@@ -37,7 +38,7 @@ export default function PaginaInicial() {
         placeholder="Nome da moto"
         placeholderTextColor="#A3D9A5"
         value={nomeMoto}
-        onChangeText={setNomeMoto}
+        onChangeText={nome => setNomeMoto(nome)}
       />
 
       <TextInput
@@ -45,7 +46,7 @@ export default function PaginaInicial() {
         placeholder="Placa da moto"
         placeholderTextColor="#A3D9A5"
         value={placa}
-        onChangeText={setPlaca}
+        onChangeText={plate => setPlaca(plate)}
       />
 
       <TextInput
@@ -54,7 +55,7 @@ export default function PaginaInicial() {
         placeholderTextColor="#A3D9A5"
         keyboardType="numeric"
         value={cpf}
-        onChangeText={setCpf}
+        onChangeText={cpf => setCpf(cpf)}
         maxLength={11}
       />
 

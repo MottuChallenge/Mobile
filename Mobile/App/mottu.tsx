@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
-import { Link } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function TelaMottu() {
   const [moto, setMoto] = useState<{ nomeMoto: string; placa: string; cpf: string } | null>(null);
   
-  useEffect(() => {
-    const carregarMoto = async () => {
-      try {
-        const motoString : string | null = await AsyncStorage.getItem('@listaMotos');
-        if (motoString) {
-          const moto : [] = JSON.parse(motoString)
-          const ultimaMoto = moto[moto.length - 1];
-          setMoto(ultimaMoto);
+  useFocusEffect(
+    useCallback(() => {
+      const carregarMoto = async () => {
+        try {
+          const motoString: string | null = await AsyncStorage.getItem('@listaMotos');
+          if (motoString) {
+            const listaMotos: [] = JSON.parse(motoString);
+            const ultimaMoto = listaMotos[listaMotos.length - 1];
+            setMoto(ultimaMoto);
+          }
+        } catch (error) {
+          console.error('Erro ao recuperar dados', error);
         }
-      } catch (error) {
-        console.error('Erro ao recuperar dados', error);
-      }
-    };
-    
-    carregarMoto();
-  }, []);
+      };
+
+      carregarMoto();
+    }, [])
+  );
 
   return (
     <View style={styles.container}>

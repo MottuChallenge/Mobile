@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "expo-router";
 
-// Tipagem do objeto Moto
 type Moto = {
   nomeMoto: string;
   placa: string;
@@ -12,21 +12,26 @@ type Moto = {
 export default function ListaMotos() {
   const [motos, setMotos] = useState<Moto[]>([]);
 
-  useEffect(() => {
-    const carregarMotos = async () => {
-      try {
-        const dados = await AsyncStorage.getItem("@listaMotos");
-        if (dados) {
-          const listaMotos: Moto[] = JSON.parse(dados);
-          setMotos(listaMotos);
+  useFocusEffect(
+    useCallback(() => {
+      const carregarMotos = async () => {
+        try {
+          const dados = await AsyncStorage.getItem("@listaMotos");
+          if (dados) {
+            const listaMotos: Moto[] = JSON.parse(dados);
+            console.log(listaMotos);
+            
+            setMotos(listaMotos);
+          }
+        } catch (error) {
+          console.error("Erro ao carregar motos:", error);
         }
-      } catch (error) {
-        console.error("Erro ao carregar motos:", error);
-      }
-    };
-
-    carregarMotos();
-  }, []);
+      };
+  
+      carregarMotos();
+    }, [])
+  );
+  
 
   return (
     <View style={styles.container}>
