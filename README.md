@@ -29,5 +29,3 @@ Este é um aplicativo mobile desenvolvido com **React Native** utilizando o **fr
 npm install
 npx expo start <-- Opção 1
 npm start <-- Opção 2
-
-

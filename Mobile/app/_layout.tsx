@@ -3,12 +3,43 @@ import { Drawer } from "expo-router/drawer";
 export default function Layout() {
     return (
         <Drawer>
-            <Drawer.Screen name="index" options={{ title: "Pagina Inicial",}} />
-            <Drawer.Screen name="cadastro" options={{ title: "MotoZone",}} />
-            <Drawer.Screen name="mottu" options={{ title: "Mottu" }} />
+            <Drawer.Screen name="index" 
+                options={{ 
+                    title: "Pagina Inicial", 
+                    headerTransparent: true, 
+                    headerTitleAlign: "center", 
+                    headerTitleStyle: {color: "#fff"}, 
+                    headerTintColor: "#FFF"}} 
+            />
+            <Drawer.Screen name="cadastro" options={{ 
+                    title: "Cadastro", 
+                    headerTransparent: true, 
+                    headerTitleAlign: "center", 
+                    headerTitleStyle: {color: "#fff"}, 
+                    headerTintColor: "#FFF"}} 
+            />
+            <Drawer.Screen name="mottu" options={{ 
+                    title: "Mottu", 
+                    headerTransparent: true, 
+                    headerTitleAlign: "center", 
+                    headerTitleStyle: {color: "#fff"}, 
+                    headerTintColor: "#FFF"}} 
+            />
             <Drawer.Screen name="patios" options={{ title: "Patios" }} />
-            <Drawer.Screen name="listamotos" options={{ title: "Lista de Motos" }} />
-            <Drawer.Screen name="integrantes" options={{ title: "Integrantes" }} />
+            <Drawer.Screen name="listamotos" options={{ 
+                    title: "Lista de Motos", 
+                    headerTransparent: true, 
+                    headerTitleAlign: "center", 
+                    headerTitleStyle: {color: "#fff"}, 
+                    headerTintColor: "#FFF"}} 
+            />
+            <Drawer.Screen name="integrantes" options={{ 
+                    title: "Nosso Time", 
+                    headerTransparent: true, 
+                    headerTitleAlign: "center", 
+                    headerTitleStyle: {color: "#fff"}, 
+                    headerTintColor: "#FFF"}} 
+            />
         </Drawer>
     )
 }

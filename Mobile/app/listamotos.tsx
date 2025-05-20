@@ -28,15 +28,8 @@ export default function ListaMotos() {
       "Confirmar exclusão",
       "Você tem certeza que deseja excluir esta moto?",
       [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: () => deletarMoto(placa),
-        },
+        { text: "Cancelar", style: "cancel" },
+        { text: "Excluir", style: "destructive", onPress: () => deletarMoto(placa) },
       ]
     );
   };
@@ -46,10 +39,7 @@ export default function ListaMotos() {
       "Confirmar limpeza",
       "Você tem certeza que deseja limpar toda a lista de motos?",
       [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
+        { text: "Cancelar", style: "cancel" },
         {
           text: "Limpar",
           style: "destructive",
@@ -74,7 +64,6 @@ export default function ListaMotos() {
           const dados = await AsyncStorage.getItem("@listaMotos");
           if (dados) {
             const listaMotos: Moto[] = JSON.parse(dados);
-            console.log(listaMotos);
             setMotos(listaMotos);
           }
         } catch (error) {
@@ -88,6 +77,7 @@ export default function ListaMotos() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Lista de Motos Cadastradas</Text>
+
       {motos.length === 0 ? (
         <Text style={styles.info}>Nenhuma moto cadastrada ainda.</Text>
       ) : (
@@ -112,10 +102,7 @@ export default function ListaMotos() {
       )}
 
       {motos.length > 0 && (
-        <TouchableOpacity
-          style={styles.clearButton}
-          onPress={limparLista}
-        >
+        <TouchableOpacity style={styles.clearButton} onPress={limparLista}>
           <Text style={styles.clearButtonText}>🧹 Limpar Lista</Text>
         </TouchableOpacity>
       )}
@@ -126,56 +113,56 @@ export default function ListaMotos() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#E6F9EC",
+    backgroundColor: "#000000",
     padding: 20,
   },
   title: {
     fontSize: 22,
     fontWeight: "bold",
+    marginTop: 50,
     marginBottom: 20,
     textAlign: "center",
-    color: "#168821",
+    color: "#7CFC00",
   },
   item: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#111111",
     padding: 15,
-    borderRadius: 8,
+    borderRadius: 10,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: "#168821",
+    borderColor: "#7CFC00",
   },
   text: {
     fontSize: 16,
-    color: "#2F5233",
+    color: "#FFFFFF",
+    marginBottom: 4,
   },
   info: {
     textAlign: "center",
-    color: "#777",
+    color: "#888888",
+    fontSize: 16,
   },
   deleteButton: {
     marginTop: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: "#FF6347",
-    borderRadius: 5,
+    paddingVertical: 6,
+    backgroundColor: "#B22222",
+    borderRadius: 6,
     alignItems: "center",
-    justifyContent: "center",
   },
   deleteButtonText: {
-    color: "#fff",
+    color: "#FFFFFF",
     fontSize: 16,
   },
   clearButton: {
     marginTop: 20,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingVertical: 8,
     backgroundColor: "#FFD700",
-    borderRadius: 5,
+    borderRadius: 6,
     alignItems: "center",
-    justifyContent: "center",
   },
   clearButtonText: {
-    color: "#fff",
+    color: "#000000",
     fontSize: 16,
+    fontWeight: "bold",
   },
 });

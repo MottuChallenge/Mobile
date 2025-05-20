@@ -35,11 +35,11 @@ export default function TelaMottu() {
           <Text style={styles.info}>CPF do Dono: {moto.cpf}</Text>
         </>
       ) : (
-        <Text>SEM DADOS </Text>
+        <Text style={styles.noData}>SEM DADOS</Text>
       )}
 
       <Link href="/listamotos" asChild>
-        <Button title="Ir p/ Lista de Motos" color="#168821" />
+        <Button title="Ir p/ Lista de Motos" color="#32CD32" />
       </Link>
     </View>
   );
@@ -48,21 +48,27 @@ export default function TelaMottu() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#E6F9EC",
+    backgroundColor: "#000000",
     padding: 24,
     justifyContent: "center",
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "600",
     marginBottom: 20,
-    color: "#168821",
+    color: "#7CFC00",
     textAlign: "center",
   },
   info: {
     fontSize: 18,
     marginBottom: 12,
-    color: "#2F5233",
+    color: "#FFFFFF",
     textAlign: "center",
+  },
+  noData: {
+    color: "#AAAAAA",
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 20,
   },
 });

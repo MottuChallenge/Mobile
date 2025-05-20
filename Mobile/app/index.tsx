@@ -1,14 +1,27 @@
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#013220" />
-      
-      <Text style={styles.title}>Bem-vindo a Mottu</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+        {/* Ícone da Mottu */}
+      <Image
+        source={require('../assets/logo_mottu.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+      <Text style={styles.title}>Bem-vindo à Mottu</Text>
+      <Text style={styles.subtitle}>Mobilidade urbana com inovação e praticidade</Text>
+
+      <Text style={styles.description}>
+        A Mottu é uma startup que oferece aluguel de motos para entregadores e autônomos. Nosso
+        objetivo é democratizar o acesso ao trabalho, fornecendo veículos confiáveis com manutenção
+        garantida e suporte ao cliente. Aqui no app, você pode cadastrar-se, visualizar motos
+        disponíveis, consultar pátios e saber mais sobre nossa equipe e missão.
+      </Text>
 
       <TouchableOpacity
         style={styles.button}
@@ -16,39 +29,51 @@ export default function HomeScreen() {
       >
         <Text style={styles.buttonText}>Começar</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#013220',
+    flexGrow: 1,
+    backgroundColor: '#000000',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: 24,
   },
   title: {
     fontSize: 32,
-    color: '#ADFF2F',
+    color: '#32CD32',
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 10,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 18,
-    color: '#98FB98',
-    marginBottom: 40,
+    color: '#ADFF2F',
+    marginBottom: 20,
     textAlign: 'center',
   },
+  description: {
+    fontSize: 16,
+    color: '#F0FFF0',
+    textAlign: 'justify',
+    marginBottom: 30,
+  },
   button: {
-    backgroundColor: '#00FF7F',
+    backgroundColor: '#32CD32',
     paddingVertical: 12,
     paddingHorizontal: 30,
-    borderRadius: 25,
+    borderRadius: 8,
   },
   buttonText: {
-    color: '#013220',
-    fontSize: 18,
+    color: '#000000',
+    fontSize: 16,
     fontWeight: 'bold',
+  },
+    logo: {
+    width: 80,
+    height: 80,
+    marginBottom: 20,
   },
 });
