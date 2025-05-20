@@ -14,7 +14,6 @@ Este é um aplicativo mobile desenvolvido com **React Native** utilizando o **fr
 - **Cadastro (`cadastro.tsx`)**: formulário para cadastro de novos usuários.
 - **Lista de Motos (`listamotos.tsx`)**: exibe as motos disponíveis.
 - **Pátios (`patios.tsx`)**: mostra os locais onde as motos estão armazenadas.
-- **Sobre a Mottu (`mottu.tsx`)**: informações gerais sobre a empresa.
 - **Equipe (`integrantes.tsx`)**: mostra os nomes e dados dos desenvolvedores.
 - **Navegação (`_layout.tsx`)**: configuração da navegação entre telas.
 
