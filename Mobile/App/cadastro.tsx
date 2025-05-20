@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PaginaInicial() {
-  const [nomeMoto, setNomeMoto] = useState("");
+  const [modelo, setmodelo] = useState("");
   const [placa, setPlaca] = useState("");
   const [cpf, setCpf] = useState("");
 
@@ -12,8 +12,8 @@ export default function PaginaInicial() {
 
   const cadastrarMoto = async () => {
     
-    if (nomeMoto && placa && cpf) {
-      const novaMoto = { nomeMoto, placa, cpf };
+    if (modelo && placa && cpf) {
+      const novaMoto = { modelo, placa, cpf };
   
       try {
         const motosSalvas = await AsyncStorage.getItem('@listaMotos');
@@ -35,16 +35,16 @@ export default function PaginaInicial() {
 
       <TextInput
         style={styles.input}
-        placeholder="Nome da moto"
-        placeholderTextColor="#A3D9A5"
-        value={nomeMoto}
-        onChangeText={nome => setNomeMoto(nome)}
+        placeholder="Modelo da moto"
+        placeholderTextColor="#000000"
+        value={modelo}
+        onChangeText={nome => setmodelo(nome)}
       />
 
       <TextInput
         style={styles.input}
         placeholder="Placa da moto"
-        placeholderTextColor="#A3D9A5"
+        placeholderTextColor="#000000"
         value={placa}
         onChangeText={plate => setPlaca(plate)}
       />
@@ -52,7 +52,7 @@ export default function PaginaInicial() {
       <TextInput
         style={styles.input}
         placeholder="CPF do dono"
-        placeholderTextColor="#A3D9A5"
+        placeholderTextColor="#000000"
         keyboardType="numeric"
         value={cpf}
         onChangeText={cpf => setCpf(cpf)}
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: "#168821",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "##000000",
     padding: 12,
     marginBottom: 16,
     borderRadius: 8,
