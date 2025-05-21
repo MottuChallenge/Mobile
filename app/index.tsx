@@ -44,34 +44,41 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     color: '#32CD32',
-    fontWeight: 'bold',
+    fontWeight: '900', // Mais forte que bold
     marginBottom: 10,
     textAlign: 'center',
+    fontFamily: 'System', // Ou uma fonte personalizada se preferir
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 20,
     color: '#ADFF2F',
     marginBottom: 20,
     textAlign: 'center',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
   description: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#F0FFF0',
-    textAlign: 'justify',
+    textAlign: 'center',
     marginBottom: 30,
+    fontWeight: '500',
+    lineHeight: 24,
   },
   button: {
     backgroundColor: '#32CD32',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 8,
+    marginTop: 10,
   },
   buttonText: {
     color: '#000000',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
-    logo: {
+  logo: {
     width: 80,
     height: 80,
     marginBottom: 20,
