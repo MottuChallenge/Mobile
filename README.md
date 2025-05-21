@@ -29,7 +29,6 @@ Este é um aplicativo mobile desenvolvido com **React Native** utilizando o **fr
 git clone https://github.com/MottuChallenge/Mobile.git
 cd Mobile
 
-```bash
 npm install
 npx expo start <-- Opção 1
 npm start <-- Opção 2
