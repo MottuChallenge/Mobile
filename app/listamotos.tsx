@@ -18,7 +18,6 @@ export default function ListaMotos() {
       const novasMotos = motos.filter((moto) => moto.placa !== placa);
       setMotos(novasMotos);
       await AsyncStorage.setItem("@listaMotos", JSON.stringify(novasMotos));
-      console.log("Moto deletada com sucesso");
     } catch (error) {
       console.error("Erro ao deletar moto:", error);
     }
@@ -48,7 +47,6 @@ export default function ListaMotos() {
             try {
               setMotos([]);
               await AsyncStorage.removeItem("@listaMotos");
-              console.log("Lista limpa com sucesso!");
             } catch (error) {
               console.error("Erro ao limpar lista:", error);
             }

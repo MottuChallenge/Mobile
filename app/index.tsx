@@ -44,10 +44,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     color: '#32CD32',
-    fontWeight: '900', // Mais forte que bold
+    fontWeight: '900', 
     marginBottom: 10,
     textAlign: 'center',
-    fontFamily: 'System', // Ou uma fonte personalizada se preferir
+    fontFamily: 'System', 
   },
   subtitle: {
     fontSize: 20,

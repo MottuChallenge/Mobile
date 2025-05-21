@@ -6,10 +6,9 @@ const transparentHeaderOptions: DrawerNavigationOptions = {
   headerTitleAlign: 'center',
   headerTitleStyle: {
     color: "#fff",
-    fontWeight: "900", // bem bold
+    fontWeight: "900",
     fontSize: 22,
-    fontFamily: "System", // ou personalizada
-    textShadowColor: "#fff", // verde-limão
+    fontFamily: "Nunito", 
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 4,
   },
@@ -22,8 +21,7 @@ const solidHeaderOptions: DrawerNavigationOptions = {
     color: "#000",
     fontWeight: "900",
     fontSize: 22,
-    fontFamily: "System",
-    textShadowColor: "#fff",
+    fontFamily: "Nunito",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 4,
   },
