@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 
 type Moto = {
   nomeMoto: string;
@@ -11,6 +11,7 @@ type Moto = {
 
 export default function ListaMotos() {
   const [motos, setMotos] = useState<Moto[]>([]);
+  const router = useRouter();
 
   const deletarMoto = async (placa: string) => {
     try {
@@ -102,9 +103,16 @@ export default function ListaMotos() {
       )}
 
       {motos.length > 0 && (
-        <TouchableOpacity style={styles.clearButton} onPress={limparLista}>
-          <Text style={styles.clearButtonText}>🧹 Limpar Lista</Text>
-        </TouchableOpacity>
+        <>
+          <TouchableOpacity style={styles.clearButton} onPress={limparLista}>
+            <Text style={styles.clearButtonText}>🧹 Limpar Lista</Text>
+          </TouchableOpacity>
+
+          {/* BOTÃO PARA IR PARA O PÁTIO */}
+          <TouchableOpacity style={styles.patioButton} onPress={() => router.push("/patios")}>
+            <Text style={styles.patioButtonText}>🚗 Ir para o Pátio</Text>
+          </TouchableOpacity>
+        </>
       )}
     </View>
   );
@@ -162,6 +170,18 @@ const styles = StyleSheet.create({
   },
   clearButtonText: {
     color: "#000000",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  patioButton: {
+    marginTop: 15,
+    paddingVertical: 8,
+    backgroundColor: "#1E90FF",
+    borderRadius: 6,
+    alignItems: "center",
+  },
+  patioButtonText: {
+    color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
   },

@@ -25,7 +25,12 @@ export default function Layout() {
                     headerTitleStyle: {color: "#fff"}, 
                     headerTintColor: "#FFF"}} 
             />
-            <Drawer.Screen name="patios" options={{ title: "Patios" }} />
+            <Drawer.Screen name="patios" options={{ 
+                    title: "Patios", 
+                    headerTitleAlign: "center", 
+                    headerTitleStyle: {color: "#000"}, 
+                    headerTintColor: "#000"}} 
+            />
             <Drawer.Screen name="listamotos" options={{ 
                     title: "Lista de Motos", 
                     headerTransparent: true, 
