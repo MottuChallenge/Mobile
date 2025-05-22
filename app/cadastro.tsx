@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -31,8 +31,12 @@ export default function PaginaInicial() {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require('../assets/logo_mottu.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
       <Text style={styles.title}>Cadastre a sua Moto</Text>
-
       <TextInput
         style={styles.input}
         placeholder="Modelo da moto"
@@ -58,7 +62,6 @@ export default function PaginaInicial() {
         onChangeText={cpf => setCpf(cpf)}
         maxLength={11}
       />
-
       <TouchableOpacity style={styles.button} onPress={cadastrarMoto}>
         <Text style={styles.buttonText}>Cadastrar Moto</Text>
       </TouchableOpacity>
@@ -100,5 +103,17 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
-  },
+  },logo: {
+    width: 60,
+    height: 70,
+    alignSelf: "center",
+    marginBottom: 30,
+    borderRadius: 10, 
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  }
+  
 });

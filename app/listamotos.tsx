@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
 
 type Moto = {
-  nomeMoto: string;
+  modelo: string;
   placa: string;
   cpf: string;
 };
@@ -85,7 +85,7 @@ export default function ListaMotos() {
           keyExtractor={(_, index) => index.toString()}
           renderItem={({ item }) => (
             <View style={styles.item}>
-              <Text style={styles.text}>🏍️ Nome: {item.nomeMoto}</Text>
+              <Text style={styles.text}>🏍️ Nome: {item.modelo}</Text>
               <Text style={styles.text}>📄 Placa: {item.placa}</Text>
               <Text style={styles.text}>👤 CPF: {item.cpf}</Text>
 

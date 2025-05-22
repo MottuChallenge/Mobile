@@ -4,7 +4,7 @@ import { Link, useFocusEffect } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function TelaMottu() {
-  const [moto, setMoto] = useState<{ nomeMoto: string; placa: string; cpf: string } | null>(null);
+  const [moto, setMoto] = useState<{ modelo: string; placa: string; cpf: string } | null>(null);
   
   useFocusEffect(
     useCallback(() => {
@@ -30,7 +30,7 @@ export default function TelaMottu() {
       {moto ? (
         <>
           <Text style={styles.title}>Moto cadastrada!</Text>
-          <Text style={styles.info}>Nome da Moto: {moto.nomeMoto}</Text>
+          <Text style={styles.info}>Nome da Moto: {moto.modelo}</Text>
           <Text style={styles.info}>Placa: {moto.placa}</Text>
           <Text style={styles.info}>CPF do Dono: {moto.cpf}</Text>
         </>
