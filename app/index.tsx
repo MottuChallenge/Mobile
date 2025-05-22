@@ -7,9 +7,9 @@ export default function HomeScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
-        {/* Ícone da Mottu */}
+        {/* Ícone da Moto */}
       <Image
-        source={require('../assets/logo_mottu.png')}
+        source={require('../assets/moto.png')}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -22,7 +22,11 @@ export default function HomeScreen() {
         garantida e suporte ao cliente. Aqui no app, você pode cadastrar-se, visualizar motos
         disponíveis, consultar pátios e saber mais sobre nossa equipe e missão.
       </Text>
-
+      <Image
+        source={require('../assets/logo_mottu.png')}
+        style={styles.logo_icon}
+        resizeMode="contain"
+      />
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('cadastro')}
@@ -78,9 +82,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  logo_icon: {
+    width: 50,
+    height: 50,
+    marginBottom: 20,
+  },
   logo: {
-    width: 80,
-    height: 80,
+    width: 250,
+    height: 200,
     marginBottom: 20,
   },
 });
