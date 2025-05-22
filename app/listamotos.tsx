@@ -182,5 +182,16 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
-  },
+  },logo: {
+    width: 60,
+    height: 70,
+    alignSelf: "center",
+    marginBottom: 30,
+    borderRadius: 10, 
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  }
 });

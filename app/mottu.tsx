@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, Image} from "react-native";
 import { Link, useFocusEffect } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -27,6 +27,11 @@ export default function TelaMottu() {
 
   return (
     <View style={styles.container}>
+        <Image
+        source={require('../assets/logo_mottu.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
       {moto ? (
         <>
           <Text style={styles.title}>Moto cadastrada!</Text>
@@ -70,5 +75,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginBottom: 20,
-  },
+  },logo: {
+    width: 60,
+    height: 70,
+    alignSelf: "center",
+    marginBottom: 30,
+    borderRadius: 10, 
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  }
 });
