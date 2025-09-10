@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useThemeContext } from "../theme/ThemeContext";
 import { useFocusEffect, useRouter } from "expo-router";
 
 type Moto = {
@@ -10,6 +11,7 @@ type Moto = {
 };
 
 export default function ListaMotos() {
+  const { colors } = useThemeContext()
   const [motos, setMotos] = useState<Moto[]>([]);
   const router = useRouter();
 
@@ -74,7 +76,7 @@ export default function ListaMotos() {
   );
 
   return (
-    <View style={styles.container}>
+      <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
       <Text style={styles.title}>Lista de Motos Cadastradas</Text>
 
       {motos.length === 0 ? (
@@ -112,7 +114,7 @@ export default function ListaMotos() {
           </TouchableOpacity>
         </>
       )}
-    </View>
+    </ScrollView>
   );
 }
 

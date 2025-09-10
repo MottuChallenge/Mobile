@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
+import { useThemeContext } from "../theme/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PaginaInicial() {
   const [modelo, setmodelo] = useState("");
   const [placa, setPlaca] = useState("");
   const [cpf, setCpf] = useState("");
+  const { colors } = useThemeContext()
 
   const router = useRouter();
 
@@ -30,7 +32,7 @@ export default function PaginaInicial() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
       <Image
         source={require('../assets/logo_mottu.png')}
         style={styles.logo}
@@ -65,7 +67,7 @@ export default function PaginaInicial() {
       <TouchableOpacity style={styles.button} onPress={cadastrarMoto}>
         <Text style={styles.buttonText}>Cadastrar Moto</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 

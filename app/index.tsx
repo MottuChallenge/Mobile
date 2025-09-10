@@ -1,11 +1,14 @@
 import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useThemeContext } from "../theme/ThemeContext";
+import ThemeToggleButton from '../theme/ToggleButtonTheme';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
-
+  const { colors } = useThemeContext()
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
+      <ThemeToggleButton />
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
         {/* Ícone da Moto */}
       <Image
@@ -63,7 +66,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 17,
-    color: '#F0FFF0',
+    color: '#32CD32',
     textAlign: 'center',
     marginBottom: 30,
     fontWeight: '500',

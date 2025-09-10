@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Linking, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { useThemeContext } from "../theme/ThemeContext";
 
 const integrantes = [
   {
@@ -23,8 +24,9 @@ const integrantes = [
 ];
 
 export default function Integrantes() {
+  const { colors } = useThemeContext()
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
 
       {integrantes.map((integrante, index) => (
         <View key={index} style={styles.card}>

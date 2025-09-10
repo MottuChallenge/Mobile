@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, Image} from "react-native";
+import { View, Text, StyleSheet, Button, Image, ScrollView} from "react-native";
 import { Link, useFocusEffect } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useThemeContext } from "../theme/ThemeContext";
 
 export default function TelaMottu() {
+  const { colors } = useThemeContext()
   const [moto, setMoto] = useState<{ modelo: string; placa: string; cpf: string } | null>(null);
   
   useFocusEffect(
@@ -26,7 +28,7 @@ export default function TelaMottu() {
   );
 
   return (
-    <View style={styles.container}>
+        <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
         <Image
         source={require('../assets/logo_mottu.png')}
         style={styles.logo}
@@ -46,7 +48,7 @@ export default function TelaMottu() {
       <Link href="/listamotos" asChild>
         <Button title="Ir p/ Lista de Motos" color="#32CD32" />
       </Link>
-    </View>
+    </ScrollView>
   );
 }
 

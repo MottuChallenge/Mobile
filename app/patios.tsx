@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { View, StyleSheet, Platform, Text, FlatList, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
+import { useThemeContext } from "../theme/ThemeContext";
 
 const patios = [
   { id: 1, nome: 'Pátio Zona Sul', latitude: -23.61052, longitude: -46.633308, area: '1.200 m²', qtdMotos: 42 },
@@ -9,6 +10,7 @@ const patios = [
 ];
 
 export default function Patios() {
+  const { colors } = useThemeContext()
   const mapRef = useRef<MapView>(null);
   const [patioSelecionado, setPatioSelecionado] = useState<typeof patios[0] | null>(null);
 
