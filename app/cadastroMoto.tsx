@@ -3,20 +3,37 @@ import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image, Scro
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../theme/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth } from "../firebase/FirebaseConfig"
 
 export default function PaginaInicial() {
-  const [modelo, setmodelo] = useState("");
+  const [modelo, setModelo] = useState("");
   const [placa, setPlaca] = useState("");
   const [cpf, setCpf] = useState("");
-  const { colors } = useThemeContext()
-
+  const { colors } = useThemeContext();
   const router = useRouter();
 
+  const verificarUsuario = async () => {
+    try {
+      const user = await AsyncStorage.getItem("@user");
+      if (!user) {
+        Alert.alert("Erro", "Você precisa estar logado para cadastrar a moto.");
+        router.push("/login"); 
+        return false;
+      }
+      return true;
+    } catch (error) {
+      Alert.alert("Erro", "Ocorreu um erro ao verificar o usuário.");
+      return false;
+    }
+  };
+
   const cadastrarMoto = async () => {
-    
     if (modelo && placa && cpf) {
+      const usuarioAutenticado = await verificarUsuario(); 
+      if (!usuarioAutenticado) return; 
+
       const novaMoto = { modelo, placa, cpf };
-  
+
       try {
         const motosSalvas = await AsyncStorage.getItem('@listaMotos');
         const listaMotos = motosSalvas ? JSON.parse(motosSalvas) : [];
@@ -32,19 +49,19 @@ export default function PaginaInicial() {
   };
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
       <Image
         source={require('../assets/logo_mottu.png')}
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={styles.title}>Cadastre a sua Moto</Text>
+      <Text style={styles.title}>Registre a sua Moto</Text>
       <TextInput
         style={styles.input}
         placeholder="Modelo da moto"
         placeholderTextColor="#000000"
         value={modelo}
-        onChangeText={nome => setmodelo(nome)}
+        onChangeText={setModelo}
       />
 
       <TextInput
@@ -52,7 +69,7 @@ export default function PaginaInicial() {
         placeholder="Placa da moto"
         placeholderTextColor="#000000"
         value={placa}
-        onChangeText={plate => setPlaca(plate)}
+        onChangeText={setPlaca}
       />
 
       <TextInput
@@ -61,7 +78,7 @@ export default function PaginaInicial() {
         placeholderTextColor="#000000"
         keyboardType="numeric"
         value={cpf}
-        onChangeText={cpf => setCpf(cpf)}
+        onChangeText={setCpf}
         maxLength={11}
       />
       <TouchableOpacity style={styles.button} onPress={cadastrarMoto}>
@@ -92,7 +109,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     borderRadius: 8,
-    color: "#000", 
+    color: "#000",
   },
   button: {
     backgroundColor: "#32CD32",
@@ -105,17 +122,17 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
-  },logo: {
+  },
+  logo: {
     width: 60,
     height: 70,
     alignSelf: "center",
     marginBottom: 30,
-    borderRadius: 10, 
+    borderRadius: 10,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
   }
-  
 });

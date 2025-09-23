@@ -10,7 +10,6 @@ export default function HomeScreen() {
     <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
       <ThemeToggleButton />
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
-        {/* Ícone da Moto */}
       <Image
         source={require('../assets/moto.png')}
         style={styles.logo}
@@ -32,7 +31,7 @@ export default function HomeScreen() {
       />
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('cadastro')}
+        onPress={() => navigation.navigate('cadastroUser')}
       >
         <Text style={styles.buttonText}>Começar</Text>
       </TouchableOpacity>
