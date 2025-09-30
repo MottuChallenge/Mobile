@@ -1,23 +1,37 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native";
+import React, { useCallback, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useThemeContext } from "../theme/ThemeContext";
 import { useFocusEffect, useRouter } from "expo-router";
+import { findMotorcycles } from "../service/DatabaseSevice";
 
+// ---------- Tipo atualizado ----------
 type Moto = {
-  modelo: string;
-  placa: string;
+  model: string;
+  plate: string;
   cpf: string;
+  spotId?: string;
+  lastRevisionDate?: string;
 };
 
 export default function ListaMotos() {
-  const { colors } = useThemeContext()
+  const { colors } = useThemeContext();
   const [motos, setMotos] = useState<Moto[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
+  // ---------- Funções de manipulação ----------
   const deletarMoto = async (placa: string) => {
     try {
-      const novasMotos = motos.filter((moto) => moto.placa !== placa);
+      const novasMotos = motos.filter((moto) => moto.plate !== placa);
       setMotos(novasMotos);
       await AsyncStorage.setItem("@listaMotos", JSON.stringify(novasMotos));
     } catch (error) {
@@ -25,105 +39,128 @@ export default function ListaMotos() {
     }
   };
 
-  const confirmarDeletarMoto = (placa: string) => {
-    Alert.alert(
-      "Confirmar exclusão",
-      "Você tem certeza que deseja excluir esta moto?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Excluir", style: "destructive", onPress: () => deletarMoto(placa) },
-      ]
-    );
-  };
+  const confirmarDeletarMoto = (placa: string) =>
+    Alert.alert("Confirmar exclusão", "Deseja excluir esta moto?", [
+      { text: "Cancelar", style: "cancel" },
+      { text: "Excluir", style: "destructive", onPress: () => deletarMoto(placa) },
+    ]);
 
-  const limparLista = async () => {
-    Alert.alert(
-      "Confirmar limpeza",
-      "Você tem certeza que deseja limpar toda a lista de motos?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Limpar",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              setMotos([]);
-              await AsyncStorage.removeItem("@listaMotos");
-            } catch (error) {
-              console.error("Erro ao limpar lista:", error);
-            }
-          },
+  const limparLista = () =>
+    Alert.alert("Confirmar limpeza", "Deseja limpar toda a lista?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Limpar",
+        style: "destructive",
+        onPress: async () => {
+          setMotos([]);
+          await AsyncStorage.removeItem("@listaMotos");
         },
-      ]
-    );
-  };
+      },
+    ]);
 
+  // ---------- Carregar motos do backend ----------
   useFocusEffect(
     useCallback(() => {
       const carregarMotos = async () => {
+        setLoading(true);
         try {
-          const dados = await AsyncStorage.getItem("@listaMotos");
-          if (dados) {
-            const listaMotos: Moto[] = JSON.parse(dados);
-            setMotos(listaMotos);
-          }
+          const lista = await findMotorcycles(1, 10);
+          const motosFormatadas: Moto[] = lista.map((m: Moto) => ({
+            modelo: m.model,
+            placa: m.plate,
+            cpf: m.cpf ?? "-",
+            spotId: m.spotId ?? "-",
+            lastRevisionDate: m.lastRevisionDate
+              ? new Date(m.lastRevisionDate).toLocaleDateString()
+              : "-",
+          }));
+          setMotos(motosFormatadas);
+          await AsyncStorage.setItem("@listaMotos", JSON.stringify(motosFormatadas));
         } catch (error) {
           console.error("Erro ao carregar motos:", error);
+        } finally {
+          setLoading(false);
         }
       };
       carregarMotos();
     }, [])
   );
 
+  // ---------- Componentes menores ----------
+  const MotoItem = ({ moto }: { moto: Moto }) => (
+    <View style={styles.item}>
+      <Text style={styles.text}>🏍️ Modelo: {moto.model}</Text>
+      <Text style={styles.text}>📄 Placa: {moto.plate}</Text>
+      <Text style={styles.text}>👤 CPF: {moto.cpf}</Text>
+      <Text style={styles.text}>📍 Spot ID: {moto.spotId}</Text>
+      <Text style={styles.text}>🗓 Última Revisão: {moto.lastRevisionDate}</Text>
+
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => confirmarDeletarMoto(moto.plate)}
+      >
+        <Text style={styles.deleteButtonText}>🗑️ Excluir</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const ActionButton = ({
+    text,
+    onPress,
+    style,
+    textStyle,
+  }: {
+    text: string;
+    onPress: () => void;
+    style?: object;
+    textStyle?: object;
+  }) => (
+    <TouchableOpacity style={[styles.actionButton, style]} onPress={onPress}>
+      <Text style={[styles.actionButtonText, textStyle]}>{text}</Text>
+    </TouchableOpacity>
+  );
+
+  // ---------- Render ----------
   return (
-      <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Text style={styles.title}>Lista de Motos Cadastradas</Text>
 
-      {motos.length === 0 ? (
+      {loading ? (
+        <ActivityIndicator size="large" color={colors.input} />
+      ) : motos.length === 0 ? (
         <Text style={styles.info}>Nenhuma moto cadastrada ainda.</Text>
       ) : (
         <FlatList
           data={motos}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              <Text style={styles.text}>🏍️ Nome: {item.modelo}</Text>
-              <Text style={styles.text}>📄 Placa: {item.placa}</Text>
-              <Text style={styles.text}>👤 CPF: {item.cpf}</Text>
-
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => confirmarDeletarMoto(item.placa)}
-              >
-                <Text style={styles.deleteButtonText}>🗑️ Excluir</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          keyExtractor={(item) => item.plate}
+          renderItem={({ item }) => <MotoItem moto={item} />}
+          contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
 
-      {motos.length > 0 && (
+      {!loading && motos.length > 0 && (
         <>
-          <TouchableOpacity style={styles.clearButton} onPress={limparLista}>
-            <Text style={styles.clearButtonText}>🧹 Limpar Lista</Text>
-          </TouchableOpacity>
+          <ActionButton
+            text="🧹 Limpar Lista"
+            onPress={limparLista}
+            style={{ backgroundColor: "#FFD700", marginTop: 10 }}
+            textStyle={{ color: "#000", fontWeight: "bold" }}
+          />
 
-          {/* BOTÃO PARA IR PARA O PÁTIO */}
-          <TouchableOpacity style={styles.patioButton} onPress={() => router.push("/patios")}>
-            <Text style={styles.patioButtonText}>🚗 Ir para o Pátio</Text>
-          </TouchableOpacity>
+          <ActionButton
+            text="🚗 Ir para o Pátio"
+            onPress={() => router.push("/patios")}
+            style={{ backgroundColor: "#1E90FF", marginTop: 10 }}
+          />
         </>
       )}
-    </ScrollView>
+    </View>
   );
 }
 
+// ---------- Styles ----------
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000000",
-    padding: 20,
-  },
+  container: { flex: 1, padding: 20 },
   title: {
     fontSize: 22,
     fontWeight: "bold",
@@ -133,23 +170,15 @@ const styles = StyleSheet.create({
     color: "#7CFC00",
   },
   item: {
-    backgroundColor: "#111111",
+    backgroundColor: "#111",
     padding: 15,
     borderRadius: 10,
     marginBottom: 15,
     borderWidth: 1,
     borderColor: "#7CFC00",
   },
-  text: {
-    fontSize: 16,
-    color: "#FFFFFF",
-    marginBottom: 4,
-  },
-  info: {
-    textAlign: "center",
-    color: "#888888",
-    fontSize: 16,
-  },
+  text: { fontSize: 16, color: "#FFF", marginBottom: 4 },
+  info: { textAlign: "center", color: "#888", fontSize: 16 },
   deleteButton: {
     marginTop: 10,
     paddingVertical: 6,
@@ -157,43 +186,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignItems: "center",
   },
-  deleteButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-  },
-  clearButton: {
-    marginTop: 20,
+  deleteButtonText: { color: "#FFF", fontSize: 16 },
+  actionButton: {
     paddingVertical: 8,
-    backgroundColor: "#FFD700",
     borderRadius: 6,
     alignItems: "center",
   },
-  clearButtonText: {
-    color: "#000000",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  patioButton: {
-    marginTop: 15,
-    paddingVertical: 8,
-    backgroundColor: "#1E90FF",
-    borderRadius: 6,
-    alignItems: "center",
-  },
-  patioButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },logo: {
-    width: 60,
-    height: 70,
-    alignSelf: "center",
-    marginBottom: 30,
-    borderRadius: 10, 
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  }
+  actionButtonText: { fontSize: 16, color: "#FFF" },
 });

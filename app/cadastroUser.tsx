@@ -3,8 +3,7 @@ import { ScrollView, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../theme/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/FirebaseConfig"; // A instância do Firebase
+import { createUser } from "../service/LoginService";
 
 export default function CadastroUser() {
   const [email, setEmail] = useState("");
@@ -14,16 +13,7 @@ export default function CadastroUser() {
 
   const handleCadastroUser = async () => {
     if (email && password) {
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        await AsyncStorage.setItem('@user', JSON.stringify(user));
-        router.push("/login"); 
-      } catch (error: any) {  
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        Alert.alert("Erro", `Erro ao cadastrar: ${errorMessage}`);
-      }
+      createUser(email, password)
     } else {
       Alert.alert("Erro", "Preencha todos os campos.");
     }

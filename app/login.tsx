@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { useThemeContext } from "../theme/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase/FirebaseConfig"; // A instância do Firebase
+import { userLogin } from "../service/LoginService";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,16 +14,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (email && password) {
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        await AsyncStorage.setItem('@user', JSON.stringify(user));
-        router.push("/cadastroMoto"); 
-      } catch (error: any) { 
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        Alert.alert("Erro", `Erro ao fazer login: ${errorMessage}`);
-      }
+      userLogin(email, password)
     } else {
       Alert.alert("Erro", "Preencha todos os campos.");
     }

@@ -3,7 +3,6 @@ import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image, Scro
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../theme/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { auth } from "../firebase/FirebaseConfig"
 
 export default function PaginaInicial() {
   const [modelo, setModelo] = useState("");

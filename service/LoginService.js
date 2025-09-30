@@ -1,5 +1,5 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, deleteUser, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
-import { auth } from "../config/FirebaseConfig";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/FirebaseConfig";
 import { useRouter } from "expo-router";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,11 +7,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const router = useRouter()
 
 export const createUser = (email, password) => {
-    createUserWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth , email, password)
           .then(async(userCredential) => {
             const user = userCredential.user;
             await AsyncStorage.setItem('@user', JSON.stringify(user));
-            router.push('/HomeScreen');
+            router.push('/index');
           })
           .catch((error) => {
             const errorCode = error.code;
@@ -25,7 +25,7 @@ export const userLogin = (email, password) =>  {
     .then(async(userCredential) => {
       const user = userCredential.user
       await AsyncStorage.setItem("@user", JSON.stringify(user));
-      router.push("/HomeScreen")
+      router.push("/index")
     })
     .catch((error) => {
       const errorCode = error.code;
