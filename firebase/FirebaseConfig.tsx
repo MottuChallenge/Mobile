@@ -1,25 +1,21 @@
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { initializeAuth } from "firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getFirestore, collection, addDoc, getDocs,doc,updateDoc,deleteDoc } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-const { getReactNativePersistence } = require("firebase/auth") as any;
-
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCz5U7XdbmEpkMSXeuETOiRx_aVY9A5O5g",
-  authDomain: "aulafirebaseauth-f3ddb.firebaseapp.com",
-  projectId: "aulafirebaseauth-f3ddb",
-  storageBucket: "aulafirebaseauth-f3ddb.firebasestorage.app",
-  messagingSenderId: "995782312411",
-  appId: "1:995782312411:web:830980d62fd0bfa31427fe"
+  apiKey: "AIzaSyBgm7Du7OENiTfoWeObfbPMqcZnuD9PHiA",
+  authDomain: "mobile-mottugrid.firebaseapp.com",
+  projectId: "mobile-mottugrid",
+  storageBucket: "mobile-mottugrid.firebasestorage.app",
+  messagingSenderId: "228399736823",
+  appId: "1:228399736823:web:a14fcea7c84cdcf63970f2",
+  measurementId: "G-WYZBVSY6SG"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
-
-const db = getFirestore(app)
-
-export { auth , db, getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc };
+const analytics = getAnalytics(app);
