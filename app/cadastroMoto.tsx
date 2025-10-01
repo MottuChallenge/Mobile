@@ -1,13 +1,17 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
+import { useState } from "react";
+import {Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../theme/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addMotorcycle } from "../service/ApiService";
 
 export default function PaginaInicial() {
   const [modelo, setModelo] = useState("");
   const [placa, setPlaca] = useState("");
-  const [cpf, setCpf] = useState("");
+  const [spotId, setSpotId] = useState(""); 
+  const [lastRevisionDate, setLastRevisionDate] = useState("");
+  const [engineType, setEngineType] = useState("");
+  const [loading, setLoading] = useState(false);
   const { colors } = useThemeContext();
   const router = useRouter();
 
@@ -27,23 +31,43 @@ export default function PaginaInicial() {
   };
 
   const cadastrarMoto = async () => {
-    if (modelo && placa && cpf) {
-      const usuarioAutenticado = await verificarUsuario(); 
-      if (!usuarioAutenticado) return; 
+    if (!modelo || !placa) {
+      Alert.alert("Erro", "Modelo e placa são obrigatórios.");
+      return;
+    }
 
-      const novaMoto = { modelo, placa, cpf };
+    const usuarioAutenticado = await verificarUsuario(); 
+    if (!usuarioAutenticado) return; 
 
-      try {
-        const motosSalvas = await AsyncStorage.getItem('@listaMotos');
-        const listaMotos = motosSalvas ? JSON.parse(motosSalvas) : [];
-        listaMotos.push(novaMoto);
-        await AsyncStorage.setItem('@listaMotos', JSON.stringify(listaMotos));
-        router.push("/mottu");
-      } catch (error) {
-        Alert.alert("Erro", "Não foi possível salvar a moto.");
+    setLoading(true);
+    try {
+      // Preparar a data de revisão
+      let dataRevisao: string | null = null;
+      if (lastRevisionDate && lastRevisionDate.trim() !== "") {
+        dataRevisao = new Date(lastRevisionDate).toISOString(); // Assumindo formato YYYY-MM-DD do input
+      } else {
+        dataRevisao = new Date(Date.now()).toISOString();
+        console.log(dataRevisao);
       }
-    } else {
-      Alert.alert("Erro", "Preencha todos os campos.");
+      await addMotorcycle(
+        modelo,
+        placa,
+        dataRevisao,
+        engineType ? Number(engineType) : 0
+      );
+
+      Alert.alert("Sucesso", "Moto cadastrada com sucesso!");
+      setModelo("");
+      setPlaca("");
+      setSpotId("");
+      setLastRevisionDate("");
+      setEngineType("");
+      router.push("/mottu");
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível cadastrar a moto.");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,6 +79,7 @@ export default function PaginaInicial() {
         resizeMode="contain"
       />
       <Text style={styles.title}>Registre a sua Moto</Text>
+
       <TextInput
         style={styles.input}
         placeholder="Modelo da moto"
@@ -62,7 +87,6 @@ export default function PaginaInicial() {
         value={modelo}
         onChangeText={setModelo}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Placa da moto"
@@ -70,68 +94,41 @@ export default function PaginaInicial() {
         value={placa}
         onChangeText={setPlaca}
       />
-
       <TextInput
         style={styles.input}
-        placeholder="CPF do dono"
+        placeholder="Spot ID (opcional)"
         placeholderTextColor="#000000"
-        keyboardType="numeric"
-        value={cpf}
-        onChangeText={setCpf}
-        maxLength={11}
+        value={spotId}
+        onChangeText={setSpotId}
       />
-      <TouchableOpacity style={styles.button} onPress={cadastrarMoto}>
-        <Text style={styles.buttonText}>Cadastrar Moto</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Data da última revisão (aaaa-mm-dd) (opcional)"
+        placeholderTextColor="#000000"
+        value={lastRevisionDate}
+        onChangeText={setLastRevisionDate}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Tipo de motor (0,1) (opcional)"
+        placeholderTextColor="#000000"
+        value={engineType}
+        onChangeText={setEngineType}
+        keyboardType="numeric"
+      />
+
+      <TouchableOpacity style={styles.button} onPress={cadastrarMoto} disabled={loading}>
+        <Text style={styles.buttonText}>{loading ? "Cadastrando..." : "Cadastrar Moto"}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000000",
-    padding: 24,
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 24,
-    textAlign: "center",
-    color: "#32CD32",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#32CD32",
-    backgroundColor: "#FFFFFF",
-    padding: 12,
-    marginBottom: 16,
-    borderRadius: 8,
-    color: "#000",
-  },
-  button: {
-    backgroundColor: "#32CD32",
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  logo: {
-    width: 60,
-    height: 70,
-    alignSelf: "center",
-    marginBottom: 30,
-    borderRadius: 10,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  }
+  container: { flex: 1, padding: 24, justifyContent: "center" },
+  title: { fontSize: 28, fontWeight: "bold", marginBottom: 24, textAlign: "center", color: "#32CD32" },
+  input: { borderWidth: 1, borderColor: "#32CD32", backgroundColor: "#fff", padding: 12, marginBottom: 16, borderRadius: 8, color: "#000" },
+  button: { backgroundColor: "#32CD32", paddingVertical: 14, borderRadius: 8, alignItems: "center", marginTop: 10 },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  logo: { width: 60, height: 70, alignSelf: "center", marginBottom: 30, borderRadius: 10, elevation: 4 }
 });

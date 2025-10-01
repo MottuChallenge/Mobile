@@ -13,7 +13,7 @@ export default function CadastroUser() {
 
   const handleCadastroUser = async () => {
     if (email && password) {
-      createUser(email, password)
+      createUser(email, password, router)
     } else {
       Alert.alert("Erro", "Preencha todos os campos.");
     }

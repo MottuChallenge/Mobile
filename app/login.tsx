@@ -14,7 +14,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (email && password) {
-      userLogin(email, password)
+      userLogin(email, password, router)
     } else {
       Alert.alert("Erro", "Preencha todos os campos.");
     }
