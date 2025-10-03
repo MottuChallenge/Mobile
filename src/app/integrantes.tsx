@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Linking, TouchableOpacity, ScrollView, Image } from 'react-native';
-import { useThemeContext } from "../theme/ThemeContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 const integrantes = [
   {

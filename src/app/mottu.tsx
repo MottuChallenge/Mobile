@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, Image, ScrollView} from "react-native";
+import React, { useCallback, useState } from "react";
+import { Text, StyleSheet, Button, Image, ScrollView} from "react-native";
 import { Link, useFocusEffect } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useThemeContext } from "../theme/ThemeContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 export default function TelaMottu() {
   const { colors } = useThemeContext()

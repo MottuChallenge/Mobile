@@ -1,10 +1,10 @@
 import axios from "axios";
+import { BASE_URL } from "../configurations/api";
 
-// Ajuste a URL conforme Android/iOS/dispositivo físico
-const URL_API = "http://10.0.2.2:5006/api/";
+const URL_API = `${BASE_URL}Motorcycles`;
 
 export const findMotorcycles = async (page = 1, pageSize = 10) => {
-    const fullUrl = `${URL_API}Motorcycles?page=${page}&pageSize=${pageSize}`;
+    const fullUrl = `${URL_API}?page=${page}&pageSize=${pageSize}`;
     console.log("Tentando acessar:", fullUrl);
 
     try {
@@ -19,7 +19,7 @@ export const findMotorcycles = async (page = 1, pageSize = 10) => {
 };
 
 export const getMotorcycleById = async (id) => {
-    const fullUrl = `${URL_API}Motorcycles/${id}`;
+    const fullUrl = `${URL_API}/${id}`;
     console.log("Tentando acessar:", fullUrl);
 
     try {
@@ -33,7 +33,7 @@ export const getMotorcycleById = async (id) => {
 };
 
 export const addMotorcycle = async (model, plate, lastRevisionDate, engineType = 0) => {
-    const fullUrl = `${URL_API}Motorcycles`;
+    const fullUrl = `${URL_API}`;
     console.log("Tentando acessar:", fullUrl);
     
     console.log("Data recebida:", lastRevisionDate);
@@ -58,7 +58,7 @@ export const addMotorcycle = async (model, plate, lastRevisionDate, engineType =
 };
 
 export const deleteMotorcycle = async (id) => {
-    const fullUrl = `${URL_API}Motorcycles/${id}`;
+    const fullUrl = `${URL_API}/${id}`;
     console.log("Tentando acessar:", fullUrl);
     try {
         const response = await axios.delete(fullUrl);
@@ -72,7 +72,7 @@ export const deleteMotorcycle = async (id) => {
 };
 
 export const updateMotorcycle = async (id, model, plate, spotId = null, lastRevisionDate, engineType = 0) => {
-    const fullUrl = `${URL_API}Motorcycles/${id}`;
+    const fullUrl = `${URL_API}/${id}`;
     console.log("Tentando acessar:", fullUrl);
 
     

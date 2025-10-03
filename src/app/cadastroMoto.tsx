@@ -1,9 +1,9 @@
 import { useState } from "react";
 import {Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-import { useThemeContext } from "../theme/ThemeContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addMotorcycle } from "../service/ApiService";
+import { addMotorcycle } from "../api/motos";
 
 export default function PaginaInicial() {
   const [modelo, setModelo] = useState("");
@@ -44,7 +44,7 @@ export default function PaginaInicial() {
       // Preparar a data de revisão
       let dataRevisao: string | null = null;
       if (lastRevisionDate && lastRevisionDate.trim() !== "") {
-        dataRevisao = new Date(lastRevisionDate).toISOString(); // Assumindo formato YYYY-MM-DD do input
+        dataRevisao = new Date(lastRevisionDate).toISOString();
       } else {
         dataRevisao = new Date(Date.now()).toISOString();
         console.log(dataRevisao);

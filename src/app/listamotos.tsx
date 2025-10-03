@@ -11,9 +11,9 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import { useThemeContext } from "../theme/ThemeContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 import { useFocusEffect, useRouter } from "expo-router";
-import { deleteMotorcycle, findMotorcycles, getMotorcycleById, updateMotorcycle } from "../service/ApiService";
+import { deleteMotorcycle, findMotorcycles, getMotorcycleById, updateMotorcycle } from "../api/motos";
 
 type Moto = {
   id: string;

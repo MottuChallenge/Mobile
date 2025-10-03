@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity,Text,StyleSheet } from "react-native";
-import { useThemeContext } from "./ThemeContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 
 
 export default function ThemeToggleButton(){
