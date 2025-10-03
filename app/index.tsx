@@ -5,7 +5,7 @@ import ThemeToggleButton from '../theme/ToggleButtonTheme';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
-  const { colors } = useThemeContext()
+  const { colors } = useThemeContext();
   return (
     <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
       <ThemeToggleButton />

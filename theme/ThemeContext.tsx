@@ -62,8 +62,13 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
 export const useThemeContext = () => {
   const context = useContext(ThemeContext);
+  // Retorna um valor padrão se o contexto não estiver disponível
   if (!context) {
-    throw new Error("useThemeContext precisa estar dentro do ThemeProvider");
+    return {
+      theme: "light" as CustomTheme,
+      toggleTheme: () => {},
+      colors: themeColors.light,
+    };
   }
   return context;
 };

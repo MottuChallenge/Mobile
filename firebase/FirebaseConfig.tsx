@@ -4,8 +4,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { getReactNativePersistence } = require("firebase/auth") as any;
 
-
-
 const firebaseConfig = {
   apiKey: "AIzaSyBgm7Du7OENiTfoWeObfbPMqcZnuD9PHiA",
   authDomain: "mobile-mottugrid.firebaseapp.com",
