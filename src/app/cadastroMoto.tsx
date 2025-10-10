@@ -1,15 +1,19 @@
 import { useState } from "react";
-import {Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
+import {Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image, ScrollView, Platform, View } from "react-native";
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../contexts/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addMotorcycle } from "../api/motos";
+import { addMotorcycle, Motorcycle } from "../api/motos";
+import { transformDateFormatToBR } from "../utils/transformDateFormatToBR";
 
 export default function PaginaInicial() {
   const [modelo, setModelo] = useState("");
   const [placa, setPlaca] = useState("");
   const [spotId, setSpotId] = useState(""); 
   const [lastRevisionDate, setLastRevisionDate] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [engineType, setEngineType] = useState("");
   const [loading, setLoading] = useState(false);
   const { colors } = useThemeContext();
@@ -40,21 +44,27 @@ export default function PaginaInicial() {
     if (!usuarioAutenticado) return; 
 
     setLoading(true);
+
     try {
-      // Preparar a data de revisão
       let dataRevisao: string | null = null;
       if (lastRevisionDate && lastRevisionDate.trim() !== "") {
         dataRevisao = new Date(lastRevisionDate).toISOString();
       } else {
         dataRevisao = new Date(Date.now()).toISOString();
-        console.log(dataRevisao);
       }
-      await addMotorcycle(
-        modelo,
-        placa,
-        dataRevisao,
-        engineType ? Number(engineType) : 0
-      );
+      let spotIdMotorcycle: string | null = spotId;
+      if(spotId && spotId.trim() === "") {
+        spotIdMotorcycle = null;
+      }
+      const motorcycle: Motorcycle = {
+        model: modelo,
+        plate: placa,
+        spotId: spotIdMotorcycle,
+        lastRevisionDate: dataRevisao,
+        engineType: engineType
+      };
+
+      await addMotorcycle(motorcycle);
 
       Alert.alert("Sucesso", "Moto cadastrada com sucesso!");
       setModelo("");
@@ -89,7 +99,7 @@ export default function PaginaInicial() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Placa da moto"
+        placeholder="Placa da moto (ABC-1234)"
         placeholderTextColor="#000000"
         value={placa}
         onChangeText={setPlaca}
@@ -101,21 +111,50 @@ export default function PaginaInicial() {
         value={spotId}
         onChangeText={setSpotId}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Data da última revisão (aaaa-mm-dd) (opcional)"
-        placeholderTextColor="#000000"
-        value={lastRevisionDate}
-        onChangeText={setLastRevisionDate}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Tipo de motor (0,1) (opcional)"
-        placeholderTextColor="#000000"
-        value={engineType}
-        onChangeText={setEngineType}
-        keyboardType="numeric"
-      />
+      <TouchableOpacity
+        style={[styles.input, { justifyContent: 'center' }]}
+        onPress={() => {
+          setShowDatePicker(true);
+        }}
+      >
+        {lastRevisionDate ? (
+          <Text>{transformDateFormatToBR(lastRevisionDate)}</Text>
+        ) : (
+          <Text>Data da última revisão</Text>
+        )}
+      </TouchableOpacity>
+      
+      {showDatePicker && (
+      
+        <DateTimePicker
+          value={lastRevisionDate ? new Date(lastRevisionDate) : new Date()}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
+          maximumDate={new Date()}
+          onChange={(event, selectedDate) => {
+            if (selectedDate) {
+              const yyyy = selectedDate.getFullYear();
+              const mm = String(selectedDate.getMonth() + 1).padStart(2, '0');
+              const dd = String(selectedDate.getDate() + 1).padStart(2, '0');
+              setLastRevisionDate(`${yyyy}-${mm}-${dd}`);
+            }
+            setShowDatePicker(false);
+          }}
+        />     
+      )}
+      <View style={[styles.input, { padding: 0}]}>
+        <Picker
+          selectedValue={engineType}
+          onValueChange={(value) => setEngineType(value)}
+          style={{ color: '#000', width: '100%' }}
+          itemStyle={{ color: '#000' }}
+          mode="dropdown"
+          dropdownIconColor="#32CD32"
+        >
+          <Picker.Item label="Combustão" value="0" />
+          <Picker.Item label="Elétrico" value="1" />
+        </Picker>
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={cadastrarMoto} disabled={loading}>
         <Text style={styles.buttonText}>{loading ? "Cadastrando..." : "Cadastrar Moto"}</Text>
