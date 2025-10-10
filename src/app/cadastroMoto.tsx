@@ -1,12 +1,10 @@
 import { useState } from "react";
-import {Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image, ScrollView, Platform, View } from "react-native";
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import {Text, StyleSheet, Alert, TouchableOpacity, Image, ScrollView, Platform, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../contexts/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addMotorcycle, Motorcycle } from "../api/motos";
-import { transformDateFormatToBR } from "../utils/transformDateFormatToBR";
+import MotorcycleForm from "../components/MotorcycleForm";
 
 export default function PaginaInicial() {
   const [modelo, setModelo] = useState("");
@@ -90,71 +88,18 @@ export default function PaginaInicial() {
       />
       <Text style={styles.title}>Registre a sua Moto</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Modelo da moto"
-        placeholderTextColor="#000000"
-        value={modelo}
-        onChangeText={setModelo}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Placa da moto (ABC-1234)"
-        placeholderTextColor="#000000"
-        value={placa}
-        onChangeText={setPlaca}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Spot ID (opcional)"
-        placeholderTextColor="#000000"
-        value={spotId}
-        onChangeText={setSpotId}
-      />
-      <TouchableOpacity
-        style={[styles.input, { justifyContent: 'center' }]}
-        onPress={() => {
-          setShowDatePicker(true);
+      <MotorcycleForm
+        formData={{ model: modelo, plate: placa, spotId: spotId, lastRevisionDate: lastRevisionDate, engineType: engineType }}
+        setFormData={(fd) => {
+          setModelo(fd.model);
+          setPlaca(fd.plate);
+          setSpotId(fd.spotId || '');
+          setLastRevisionDate(fd.lastRevisionDate);
+          setEngineType(fd.engineType);
         }}
-      >
-        {lastRevisionDate ? (
-          <Text>{transformDateFormatToBR(lastRevisionDate)}</Text>
-        ) : (
-          <Text>Data da última revisão</Text>
-        )}
-      </TouchableOpacity>
-      
-      {showDatePicker && (
-      
-        <DateTimePicker
-          value={lastRevisionDate ? new Date(lastRevisionDate) : new Date()}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
-          maximumDate={new Date()}
-          onChange={(event, selectedDate) => {
-            if (selectedDate) {
-              const yyyy = selectedDate.getFullYear();
-              const mm = String(selectedDate.getMonth() + 1).padStart(2, '0');
-              const dd = String(selectedDate.getDate() + 1).padStart(2, '0');
-              setLastRevisionDate(`${yyyy}-${mm}-${dd}`);
-            }
-            setShowDatePicker(false);
-          }}
-        />     
-      )}
-      <View style={[styles.input, { padding: 0}]}>
-        <Picker
-          selectedValue={engineType}
-          onValueChange={(value) => setEngineType(value)}
-          style={{ color: '#000', width: '100%' }}
-          itemStyle={{ color: '#000' }}
-          mode="dropdown"
-          dropdownIconColor="#32CD32"
-        >
-          <Picker.Item label="Combustão" value="0" />
-          <Picker.Item label="Elétrico" value="1" />
-        </Picker>
-      </View>
+        styles={styles}
+        showSpotId={true}
+      />
 
       <TouchableOpacity style={styles.button} onPress={cadastrarMoto} disabled={loading}>
         <Text style={styles.buttonText}>{loading ? "Cadastrando..." : "Cadastrar Moto"}</Text>

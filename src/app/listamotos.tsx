@@ -7,13 +7,12 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
-  Modal,
-  TextInput,
-  ScrollView,
+  
 } from "react-native";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useFocusEffect, useRouter } from "expo-router";
 import { deleteMotorcycle, findMotorcycles, getMotorcycleById, Motorcycle, updateMotorcycle } from "../api/motos";
+import EditMotorcycleModal from "../components/EditMotorcycleModal";
 
 export default function ListaMotos() {
   const { colors } = useThemeContext();
@@ -275,76 +274,14 @@ export default function ListaMotos() {
       )}
 
       {/* Modal de Edição */}
-      <Modal
-        animationType="slide"
-        transparent={true}
+      <EditMotorcycleModal
         visible={modalVisible}
-        onRequestClose={fecharModal}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.modalTitle}>Editar Moto</Text>
-              
-              {loadingModal ? (
-                <ActivityIndicator size="large" color="#32CD32" style={{ marginVertical: 20 }} />
-              ) : (
-                <>
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Modelo da moto"
-                    placeholderTextColor="#666"
-                    value={editFormData.model}
-                    onChangeText={(text) => setEditFormData({ ...editFormData, model: text })}
-                  />
-                  
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Placa da moto"
-                    placeholderTextColor="#666"
-                    value={editFormData.plate}
-                    onChangeText={(text) => setEditFormData({ ...editFormData, plate: text })}
-                  />
-                  
-                  
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Data da última revisão (dd/mm/aaaa)"
-                    placeholderTextColor="#666"
-                    value={editFormData.lastRevisionDate}
-                    onChangeText={(text) => setEditFormData({ ...editFormData, lastRevisionDate: text })}
-                  />
-                  
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Tipo de motor (0,1)"
-                    placeholderTextColor="#666"
-                    value={editFormData.engineType}
-                    onChangeText={(text) => setEditFormData({ ...editFormData, engineType: text })}
-                    keyboardType="numeric"
-                  />
-                  
-                  <View style={styles.modalButtons}>
-                    <TouchableOpacity
-                      style={[styles.modalButton, styles.cancelModalButton]}
-                      onPress={fecharModal}
-                    >
-                      <Text style={styles.modalButtonText}>Cancelar</Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity
-                      style={[styles.modalButton, styles.saveModalButton]}
-                      onPress={salvarEdicao}
-                    >
-                      <Text style={styles.modalButtonText}>Salvar</Text>
-                    </TouchableOpacity>
-                  </View>
-                </>
-              )}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+        loading={loadingModal}
+        formData={editFormData}
+        setFormData={setEditFormData}
+        onCancel={fecharModal}
+        onSave={salvarEdicao}
+      />
     </View>
   );
 }
