@@ -1,15 +1,17 @@
 import { useState } from "react";
-import {Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
+import {Text, StyleSheet, Alert, TouchableOpacity, Image, ScrollView, Platform, View } from "react-native";
 import { useRouter } from "expo-router";
-import { useThemeContext } from "../theme/ThemeContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addMotorcycle } from "../service/ApiService";
+import { addMotorcycle, Motorcycle } from "../api/motos";
+import MotorcycleForm from "../components/MotorcycleForm";
 
 export default function PaginaInicial() {
   const [modelo, setModelo] = useState("");
   const [placa, setPlaca] = useState("");
   const [spotId, setSpotId] = useState(""); 
   const [lastRevisionDate, setLastRevisionDate] = useState("");
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [engineType, setEngineType] = useState("");
   const [loading, setLoading] = useState(false);
   const { colors } = useThemeContext();
@@ -40,21 +42,27 @@ export default function PaginaInicial() {
     if (!usuarioAutenticado) return; 
 
     setLoading(true);
+
     try {
-      // Preparar a data de revisão
       let dataRevisao: string | null = null;
       if (lastRevisionDate && lastRevisionDate.trim() !== "") {
-        dataRevisao = new Date(lastRevisionDate).toISOString(); // Assumindo formato YYYY-MM-DD do input
+        dataRevisao = new Date(lastRevisionDate).toISOString();
       } else {
         dataRevisao = new Date(Date.now()).toISOString();
-        console.log(dataRevisao);
       }
-      await addMotorcycle(
-        modelo,
-        placa,
-        dataRevisao,
-        engineType ? Number(engineType) : 0
-      );
+      let spotIdMotorcycle: string | null = spotId;
+      if(spotId && spotId.trim() === "") {
+        spotIdMotorcycle = null;
+      }
+      const motorcycle: Motorcycle = {
+        model: modelo,
+        plate: placa,
+        spotId: spotIdMotorcycle,
+        lastRevisionDate: dataRevisao,
+        engineType: engineType
+      };
+
+      await addMotorcycle(motorcycle);
 
       Alert.alert("Sucesso", "Moto cadastrada com sucesso!");
       setModelo("");
@@ -80,41 +88,17 @@ export default function PaginaInicial() {
       />
       <Text style={styles.title}>Registre a sua Moto</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Modelo da moto"
-        placeholderTextColor="#000000"
-        value={modelo}
-        onChangeText={setModelo}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Placa da moto"
-        placeholderTextColor="#000000"
-        value={placa}
-        onChangeText={setPlaca}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Spot ID (opcional)"
-        placeholderTextColor="#000000"
-        value={spotId}
-        onChangeText={setSpotId}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Data da última revisão (aaaa-mm-dd) (opcional)"
-        placeholderTextColor="#000000"
-        value={lastRevisionDate}
-        onChangeText={setLastRevisionDate}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Tipo de motor (0,1) (opcional)"
-        placeholderTextColor="#000000"
-        value={engineType}
-        onChangeText={setEngineType}
-        keyboardType="numeric"
+      <MotorcycleForm
+        formData={{ model: modelo, plate: placa, spotId: spotId, lastRevisionDate: lastRevisionDate, engineType: engineType }}
+        setFormData={(fd) => {
+          setModelo(fd.model);
+          setPlaca(fd.plate);
+          setSpotId(fd.spotId || '');
+          setLastRevisionDate(fd.lastRevisionDate);
+          setEngineType(fd.engineType);
+        }}
+        styles={styles}
+        showSpotId={true}
       />
 
       <TouchableOpacity style={styles.button} onPress={cadastrarMoto} disabled={loading}>

@@ -7,32 +7,23 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
-  Modal,
-  TextInput,
-  ScrollView,
+  
 } from "react-native";
-import { useThemeContext } from "../theme/ThemeContext";
+import { useThemeContext } from "../contexts/ThemeContext";
 import { useFocusEffect, useRouter } from "expo-router";
-import { deleteMotorcycle, findMotorcycles, getMotorcycleById, updateMotorcycle } from "../service/ApiService";
-
-type Moto = {
-  id: string;
-  model: string;
-  plate: string;
-  spotId?: string;
-  lastRevisionDate?: string;
-};
+import { deleteMotorcycle, findMotorcycles, getMotorcycleById, Motorcycle, updateMotorcycle } from "../api/motos";
+import EditMotorcycleModal from "../components/EditMotorcycleModal";
 
 export default function ListaMotos() {
   const { colors } = useThemeContext();
-  const [motos, setMotos] = useState<Moto[]>([]);
+  const [motos, setMotos] = useState<Motorcycle[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [pagina, setPagina] = useState(1);
   const [totalPaginas, setTotalPaginas] = useState(1);
 
   // Estados para o modal de edição
   const [modalVisible, setModalVisible] = useState(false);
-  const [editandoMoto, setEditandoMoto] = useState<Moto | null>(null);
+  const [editandoMoto, setEditandoMoto] = useState<Motorcycle | null>(null);
   const [loadingModal, setLoadingModal] = useState(false);
   const [editFormData, setEditFormData] = useState({
     model: "",
@@ -43,7 +34,7 @@ export default function ListaMotos() {
 
   const router = useRouter();
 
-  const deletarMoto = async (id: string) => {
+  const deletarMoto = async (id: number) => {
     try {
       const novasMotos = motos.filter((moto) => moto.id !== id);
       await deleteMotorcycle(id);
@@ -54,13 +45,13 @@ export default function ListaMotos() {
     }
   };
 
-  const confirmarDeletarMoto = (id: string) =>
+  const confirmarDeletarMoto = (id: number) =>
     Alert.alert("Confirmar exclusão", "Deseja excluir esta moto?", [
       { text: "Cancelar", style: "cancel" },
       { text: "Excluir", style: "destructive", onPress: () => deletarMoto(id) },
     ]);
 
-  const abrirModalEdicao = async (moto: Moto) => {
+  const abrirModalEdicao = async (moto: Motorcycle) => {
     try {
       setLoadingModal(true);
       setModalVisible(true);
@@ -98,11 +89,11 @@ export default function ListaMotos() {
 
       await updateMotorcycle(
         editandoMoto.id,
-        editFormData.model,
-        editFormData.plate,
-        null,
-        lastRevisionDate,
-        editFormData.engineType ? Number(editFormData.engineType) : 0
+        {
+          ...editandoMoto,
+          ...editFormData,
+          lastRevisionDate
+        }
       );
 
       Alert.alert("Sucesso", "Moto editada com sucesso!");
@@ -130,14 +121,13 @@ export default function ListaMotos() {
   const carregarMotos = async (page = 1) => {
     setLoading(true);
     try {
-      const resposta = await findMotorcycles(page, 5); // 5 itens por página
-      // Verificar se a resposta tem a estrutura esperada
+      const resposta = await findMotorcycles(page, 5);
       let lista = [];
       let totalPages = 1;
-      
-      if (resposta && resposta.data) {
-        lista = resposta.data;
-        totalPages = resposta.pagination.totalPages || 1;
+
+      if (resposta && resposta.items) {
+        lista = resposta.items;
+        totalPages = resposta.totalPages || 1;
       } else if (Array.isArray(resposta)) {
         // Se a API retornar array direto
         lista = resposta;
@@ -149,14 +139,13 @@ export default function ListaMotos() {
       
       setTotalPaginas(totalPages);
 
-      const motosFormatadas: Moto[] = lista.map((m: Moto) => ({
+      const motosFormatadas: Motorcycle[] = lista.map((m: Motorcycle) => ({
         id: m.id,
         model: m.model,
         plate: m.plate,
-        spotId: m.spotId ?? "Sem Spot",
-        lastRevisionDate: m.lastRevisionDate
-          ? new Date(m.lastRevisionDate).toLocaleDateString()
-          : "-",
+        spotId: m.spotId,
+        lastRevisionDate: m.lastRevisionDate,
+        engineType: m.engineType,
       }));
       setMotos(motosFormatadas);
     } catch (error) {
@@ -173,7 +162,7 @@ export default function ListaMotos() {
     }, [pagina])
   );
 
-  const MotoItem = ({ moto }: { moto: Moto }) => (
+  const MotoItem = ({ moto }: { moto: Motorcycle }) => (
     <View style={styles.item}>
       <Text style={styles.text}>🏍️ Modelo: {moto.model}</Text>
       <Text style={styles.text}>📄 Placa: {moto.plate}</Text>
@@ -225,7 +214,7 @@ export default function ListaMotos() {
       ) : (
         <FlatList
           data={motos}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <MotoItem moto={item} />}
           contentContainerStyle={{ paddingBottom: 20 }}
         />
@@ -285,76 +274,14 @@ export default function ListaMotos() {
       )}
 
       {/* Modal de Edição */}
-      <Modal
-        animationType="slide"
-        transparent={true}
+      <EditMotorcycleModal
         visible={modalVisible}
-        onRequestClose={fecharModal}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.modalTitle}>Editar Moto</Text>
-              
-              {loadingModal ? (
-                <ActivityIndicator size="large" color="#32CD32" style={{ marginVertical: 20 }} />
-              ) : (
-                <>
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Modelo da moto"
-                    placeholderTextColor="#666"
-                    value={editFormData.model}
-                    onChangeText={(text) => setEditFormData({ ...editFormData, model: text })}
-                  />
-                  
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Placa da moto"
-                    placeholderTextColor="#666"
-                    value={editFormData.plate}
-                    onChangeText={(text) => setEditFormData({ ...editFormData, plate: text })}
-                  />
-                  
-                  
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Data da última revisão (dd/mm/aaaa)"
-                    placeholderTextColor="#666"
-                    value={editFormData.lastRevisionDate}
-                    onChangeText={(text) => setEditFormData({ ...editFormData, lastRevisionDate: text })}
-                  />
-                  
-                  <TextInput
-                    style={styles.modalInput}
-                    placeholder="Tipo de motor (0,1)"
-                    placeholderTextColor="#666"
-                    value={editFormData.engineType}
-                    onChangeText={(text) => setEditFormData({ ...editFormData, engineType: text })}
-                    keyboardType="numeric"
-                  />
-                  
-                  <View style={styles.modalButtons}>
-                    <TouchableOpacity
-                      style={[styles.modalButton, styles.cancelModalButton]}
-                      onPress={fecharModal}
-                    >
-                      <Text style={styles.modalButtonText}>Cancelar</Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity
-                      style={[styles.modalButton, styles.saveModalButton]}
-                      onPress={salvarEdicao}
-                    >
-                      <Text style={styles.modalButtonText}>Salvar</Text>
-                    </TouchableOpacity>
-                  </View>
-                </>
-              )}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+        loading={loadingModal}
+        formData={editFormData}
+        setFormData={setEditFormData}
+        onCancel={fecharModal}
+        onSave={salvarEdicao}
+      />
     </View>
   );
 }

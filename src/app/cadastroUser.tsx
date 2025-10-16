@@ -1,20 +1,18 @@
 import React, { useState } from "react";
 import { ScrollView, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
 import { useRouter } from "expo-router";
-import { useThemeContext } from "../theme/ThemeContext";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { userLogin } from "../service/LoginService";
+import { useThemeContext } from "../contexts/ThemeContext";
+import { createUser } from "../api/auth";
 
-export default function Login() {
+export default function CadastroUser() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { colors } = useThemeContext();
   const router = useRouter();
 
-  const handleLogin = async () => {
+  const handleCadastroUser = async () => {
     if (email && password) {
-      userLogin(email, password, router)
+      createUser(email, password, router)
     } else {
       Alert.alert("Erro", "Preencha todos os campos.");
     }
@@ -23,7 +21,7 @@ export default function Login() {
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
       <Image source={require('../assets/logo_mottu.png')} style={styles.logo} resizeMode="contain" />
-      <Text style={styles.title}>Login de Usuário</Text>
+      <Text style={styles.title}>Cadastro de Usuário</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -39,8 +37,8 @@ export default function Login() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
+      <TouchableOpacity style={styles.button} onPress={handleCadastroUser}>
+        <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
     </ScrollView>
   );

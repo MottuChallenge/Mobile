@@ -1,11 +1,11 @@
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useThemeContext } from "../theme/ThemeContext";
-import ThemeToggleButton from '../theme/ToggleButtonTheme';
+import { useThemeContext } from "../contexts/ThemeContext";
+import ThemeToggleButton from '../components/ToggleButtonTheme';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
-  const { colors } = useThemeContext()
+  const { colors } = useThemeContext();
   return (
     <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
       <ThemeToggleButton />

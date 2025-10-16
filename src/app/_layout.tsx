@@ -1,5 +1,5 @@
 import { Drawer } from "expo-router/drawer";
-import { ThemeProvider } from "../theme/ThemeContext";
+import { ThemeProvider } from "../contexts/ThemeContext";
 
 export default function Layout() {
   return (
