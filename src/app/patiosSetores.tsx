@@ -61,25 +61,44 @@ export default function PatiosSetores() {
     return { minX, minY, maxX, maxY };
   }, [allPoints]);
 
-  const padding = 16;
+  // Margens: lado esquerdo/direito e margem inferior (em px)
+  const sideMargin = 16; // margem esquerda/direita
+  const bottomMargin = 24; // margem inferior
+  const topMargin = 8; // margem superior
+  // Mapear o canvas para o tamanho máximo do pátio
+  const patioW = 250;
+  const patioH = 150;
   const scaleInfo = useMemo(() => {
     if (!bounds || canvasSize.width === 0 || canvasSize.height === 0) return null;
-    const worldW = bounds.maxX - bounds.minX;
-    const worldH = bounds.maxY - bounds.minY;
-    const availW = Math.max(10, canvasSize.width - padding * 2);
-    const availH = Math.max(10, canvasSize.height - padding * 2);
-    const scale = Math.min(availW / worldW, availH / worldH);
-    const offsetX = padding - bounds.minX * scale + (availW - worldW * scale) / 2;
-    const offsetY = padding - bounds.minY * scale + (availH - worldH * scale) / 2;
-    return { scale, offsetX, offsetY };
+    const availW = Math.max(10, canvasSize.width - sideMargin * 2);
+    const availH = Math.max(10, canvasSize.height - topMargin - bottomMargin);
+    // usar escala separada em X e Y para preencher tanto largura quanto altura
+    const scaleX = availW / patioW;
+    const scaleY = availH / patioH;
+    const offsetX = sideMargin; // mapear x=0 para margem esquerda
+    const offsetY = topMargin; // espaço superior
+    return { scaleX, scaleY, offsetX, offsetY };
   }, [bounds, canvasSize]);
 
   const transformPoint = (x: number, y: number) => {
     if (!scaleInfo) return { left: 0, top: 0 };
-    return {
-      left: x * scaleInfo.scale + scaleInfo.offsetX,
-      top: y * scaleInfo.scale + scaleInfo.offsetY,
-    };
+    const left = x * scaleInfo.scaleX + scaleInfo.offsetX;
+    // inverter eixo Y usando patioH
+    const top = (patioH - y) * scaleInfo.scaleY + scaleInfo.offsetY;
+    return { left, top };
+  };
+
+  const pointInPolygon = (point: { x: number; y: number }, polygon: { x: number; y: number }[]) => {
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].x, yi = polygon[i].y;
+      const xj = polygon[j].x, yj = polygon[j].y;
+
+      const intersect = ((yi > point.y) !== (yj > point.y)) &&
+        (point.x < (xj - xi) * (point.y - yi) / (yj - yi + 0.0000001) + xi);
+      if (intersect) inside = !inside;
+    }
+    return inside;
   };
 
   if (loading)
@@ -98,8 +117,10 @@ export default function PatiosSetores() {
     );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Mapa de Setores</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}> 
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: colors.text }]}>Mapa de Setores</Text>
+      </View>
 
       <View
         style={styles.canvas}
@@ -114,10 +135,10 @@ export default function PatiosSetores() {
             const orderedPts = poi
               .slice()
               .sort((a, b) => (a.pointOrder ?? 0) - (b.pointOrder ?? 0))
-              .map((p) => ({
-                x: p.x * scaleInfo.scale + scaleInfo.offsetX,
-                y: p.y * scaleInfo.scale + scaleInfo.offsetY,
-              }));
+              .map((p) => {
+                const t = transformPoint(p.x, p.y);
+                return { x: t.left, y: t.top };
+              });
 
             const edges = orderedPts.map((p, i) => {
               const next = orderedPts[(i + 1) % orderedPts.length];
@@ -164,7 +185,6 @@ export default function PatiosSetores() {
                   <Text style={styles.sectorLabel}>{s.id}</Text>
                 </View>
 
-                {/* Make the whole sector area pressable: cover polygon bbox with a transparent TouchableOpacity */}
                 {(() => {
                   const xs = orderedPts.map((p) => p.x);
                   const ys = orderedPts.map((p) => p.y);
@@ -183,28 +203,32 @@ export default function PatiosSetores() {
                   );
                 })()}
 
-                {/* Render spots (if any) and color by status */}
                 {s.spots && s.spots.length > 0 && scaleInfo
-                  ? s.spots.map((sp, i) => {
-                      const sx = sp.x * scaleInfo.scale + scaleInfo.offsetX;
-                      const sy = sp.y * scaleInfo.scale + scaleInfo.offsetY;
-                      const occupied = sp.status === "ocupado";
-                      return (
-                        <View
-                          key={`spot-${s.id}-${i}`}
-                          accessibilityLabel={`Vaga ${sp.spotId} - ${sp.status}`}
-                          style={[
-                            styles.spotDot,
-                            {
-                              left: sx - 6,
-                              top: sy - 6,
-                              backgroundColor: occupied ? "#e74c3c" : "#2ecc71",
-                              borderColor: "#fff",
-                            },
-                          ]}
-                        />
-                      );
-                    })
+                  ? (() => {
+                      const poly = orderedPts.map((p) => ({ x: p.x, y: p.y }));
+                      return s.spots
+                        .map((sp) => ({ sp, pos: transformPoint(sp.x, sp.y) }))
+                        .filter(({ pos }) => pointInPolygon({ x: pos.left, y: pos.top }, poly))
+                        .map(({ sp, pos }, i) => {
+                          const occupied = sp.status === "ocupado";
+                          return (
+                            <React.Fragment key={`spot-${s.id}-${i}`}>
+                              <View
+                                accessibilityLabel={`Vaga ${sp.spotId} - ${sp.status}`}
+                                style={[
+                                  styles.spotDot,
+                                  {
+                                    left: pos.left - 6,
+                                    top: pos.top - 6,
+                                    backgroundColor: occupied ? "#e74c3c" : "#2ecc71",
+                                    borderColor: "#fff",
+                                  },
+                                ]}
+                              />
+                            </React.Fragment>
+                          );
+                        });
+                    })()
                   : null}
               </View>
             );
@@ -217,11 +241,12 @@ export default function PatiosSetores() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 8 },
+  container: { flex: 1, padding: 0 },
+  header: { padding: 8, alignItems: 'center' },
   center: { alignItems: "center", justifyContent: "center" },
   title: { fontSize: 18, fontWeight: "800", marginBottom: 8 },
   canvas: {
-    height: Math.round(Dimensions.get("window").height * 0.6),
+    flex: 1,
     backgroundColor: "#fff",
     borderRadius: 8,
     overflow: "hidden",
@@ -244,7 +269,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   sectorLabel: { fontSize: 10, color: "#3498db", fontWeight: "700" },
-  // openButton removed: the whole sector is now pressable
   spotDot: {
     position: "absolute",
     width: 12,
