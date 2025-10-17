@@ -28,13 +28,14 @@ export const findMotorcycles = async (page = 1, pageSize = 10): Promise<Paginate
 
     try {
         const response = await axios.get(fullUrl);
+        const data = response.data;
         return {
-            items: response.data.items,
-            currentPage: response.data.currentPage,
-            totalPages: response.data.totalPages,
-            totalItems: response.data.totalItems,
-            hasPrevious: response.data.hasPrevious,
-            hasNext: response.data.hasNext
+            items: data.data,
+            currentPage: data.pagination.currentPage,
+            totalPages: data.pagination.totalPages,
+            totalItems: data.pagination.totalItems,
+            hasPrevious: data.pagination.hasPrevious,
+            hasNext: data.pagination.hasNext
         };
     } catch (error) {
         console.error("Erro ao buscar motocicletas:", error.message);
