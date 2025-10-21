@@ -10,12 +10,16 @@ Este é um aplicativo mobile desenvolvido com **React Native** utilizando o **fr
 
 ## 📱 Funcionalidades do App
 
-- **Tela Inicial (`index.tsx`)**: ponto de entrada do aplicativo e fala sobre a empresa Mottu no geral.
-- **Cadastro (`cadastro.tsx`)**: formulário para cadastro de motos pra empresa.
-- **Lista de Motos (`listamotos.tsx`)**: exibe as motos disponíveis.
-- **Pátios (`patios.tsx`)**: mostra os locais onde as motos estão armazenadas.
-- **Equipe (`integrantes.tsx`)**: mostra os nomes e dados dos desenvolvedores.
-- **Navegação (`_layout.tsx`)**: configuração da navegação entre telas.
+- **Página Inicial (`index.tsx`)** – tela de boas-vindas com informações gerais da Mottu.  
+- **Cadastro de Usuário (`cadastroUser.tsx`)** – formulário para criação de conta de usuário.  
+- **Login (`login.tsx`)** – tela para autenticação do usuário.  
+- **Cadastro de Moto (`cadastroMoto.tsx`)** – formulário para registrar motos na base da empresa.  
+- **Lista de Motos (`listamotos.tsx`)** – mostra todas as motos registradas.  
+- **Integrantes (`integrantes.tsx`)** – apresenta a equipe de desenvolvimento do projeto.  
+- **Pátios e Setores (`patiosSetores.tsx`)** – detalha a relação entre pátios e seus setores.  
+- **Setor Spots (`setorSpots.tsx`)** – tela voltada ao gerenciamento dos espaços dentro dos setores.  
+- **Navegação (`_layout.tsx`)** – responsável por toda a configuração do menu lateral (Drawer) e roteamento entre telas.
+
 
 ## 🛠️ Tecnologias Utilizadas
 
