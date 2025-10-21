@@ -10,11 +10,32 @@ export default function CadastroUser() {
   const { colors } = useThemeContext();
   const router = useRouter();
 
+  // Função para tratar cadastro de usuário
   const handleCadastroUser = async () => {
     if (email && password) {
-      createUser(email, password, router)
+      const isValidEmail = /\S+@\S+\.\S+/;
+      if (!isValidEmail.test(email)) {
+        Alert.alert("Erro", "Por favor, insira um email válido.");
+        return;
+      }
+
+      try {
+        await createUser(email, password, router);
+      } catch (error) {
+        if (error.response && error.response.status === 400) {
+          Alert.alert("Erro", "Este email já está cadastrado.");
+        } else if (error.message === "Network Error") {
+          Alert.alert("Erro", "Erro de rede. Verifique sua conexão e tente novamente.");
+        } else {
+          Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente.");
+        }
+      }
     } else {
-      Alert.alert("Erro", "Preencha todos os campos.");
+      if (!email) {
+        Alert.alert("Erro", "Preencha o campo de email.");
+      } else {
+        Alert.alert("Erro", "Preencha o campo de senha.");
+      }
     }
   };
 
@@ -39,6 +60,10 @@ export default function CadastroUser() {
       />
       <TouchableOpacity style={styles.button} onPress={handleCadastroUser}>
         <Text style={styles.buttonText}>Cadastrar</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push('/login')}>
+        <Text style={styles.loginText}>Já tem uma conta? Entre agora</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -90,5 +115,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
+  },
+  loginText: {
+    marginTop: 20,
+    color: "#32CD32",
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

@@ -31,7 +31,7 @@ export default function HomeScreen() {
       />
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('cadastroUser')}
+        onPress={() => navigation.navigate('login')}
       >
         <Text style={styles.buttonText}>Começar</Text>
       </TouchableOpacity>

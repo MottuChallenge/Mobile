@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { ScrollView, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../contexts/ThemeContext";
@@ -7,13 +7,40 @@ import { userLogin } from "../api/auth";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { colors } = useThemeContext();
   const router = useRouter();
 
+  const emailInput = useRef(null);
+  const passwordInput = useRef(null);
+
+  // Função para tratar login
   const handleLogin = async () => {
     if (email && password) {
-      userLogin(email, password, router)
+      const isValidEmail = /\S+@\S+\.\S+/;
+      if (!isValidEmail.test(email)) {
+        Alert.alert("Erro", "Por favor, insira um email válido.");
+        return;
+      }
+
+      setLoading(true);
+      try {
+        await userLogin(email, password, router);
+        router.push('/listamotos');
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          Alert.alert("Erro", "Credenciais incorretas. Verifique seu email e senha.");
+        } else if (error.message === "Network Error") {
+          Alert.alert("Erro", "Erro de rede. Verifique sua conexão e tente novamente.");
+        } else {
+          Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente.");
+        }
+      } finally {
+        setLoading(false);
+      }
     } else {
+      if (!email) emailInput.current.focus();
+      else passwordInput.current.focus();
       Alert.alert("Erro", "Preencha todos os campos.");
     }
   };
@@ -23,22 +50,31 @@ export default function Login() {
       <Image source={require('../assets/logo_mottu.png')} style={styles.logo} resizeMode="contain" />
       <Text style={styles.title}>Login de Usuário</Text>
       <TextInput
+        ref={emailInput}
         style={styles.input}
         placeholder="Email"
         placeholderTextColor="#000000"
         value={email}
         onChangeText={setEmail}
+        accessibilityLabel="Email address input"
       />
       <TextInput
+        ref={passwordInput}
         style={styles.input}
         placeholder="Senha"
         placeholderTextColor="#000000"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
+        accessibilityLabel="Password input"
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
+      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        <Text style={styles.buttonText}>{loading ? 'Carregando...' : 'Entrar'}</Text>
+      </TouchableOpacity>
+
+      {/* Botão para redirecionar para a tela de cadastro */}
+      <TouchableOpacity onPress={() => router.push('/cadastroUser')}>
+        <Text style={styles.registerText}>Não tem conta? Cadastre-se aqui</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -90,5 +126,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
+  },
+  registerText: {
+    marginTop: 20,
+    color: "#32CD32",
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
