@@ -19,12 +19,27 @@ export default function HomeScreen() {
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
       <ThemeToggleButton />
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
-      
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#ADFF2F', marginBottom: 20 }]} onPress={toggleLanguage}>
+
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: '#ADFF2F', marginBottom: 20 }]}
+        onPress={() => {
+          const nextLanguage =
+            i18n.language === 'pt'
+              ? 'en'
+              : i18n.language === 'en'
+                ? 'es'
+                : 'pt';
+          i18n.changeLanguage(nextLanguage);
+        }}
+      >
         <Text style={styles.buttonText}>
-          {i18n.language === 'pt' ? 'Switch to English' : 'Mudar para Português'}
+          {i18n.language === 'pt'
+            ? 'Mudar para Inglês'
+            : i18n.language === 'en'
+              ? 'Cambiar a Español'
+              : 'Switch to Portuguese'}
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity>F
 
       <Image
         source={require('../assets/moto.png')}

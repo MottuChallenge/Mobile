@@ -3,6 +3,8 @@ import { initReactI18next } from 'react-i18next';
 
 import enHome from '../locales/en/home.json';
 import ptHome from '../locales/pt/home.json';
+import esHome from '../locales/es/home.json';
+
 
 
 i18n
@@ -14,6 +16,9 @@ i18n
       },
       pt: {
         home: ptHome,
+      },
+       es: {
+        home: esHome,
       },
     },
     lng: 'pt', 
