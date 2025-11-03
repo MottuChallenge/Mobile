@@ -1,0 +1,102 @@
+{
+  "home": {
+    "title": "Bem-vindo à Mottu",
+    "subtitle": "Mobilidade urbana com inovação e conveniência",
+    "description": "A Mottu é uma startup que oferece aluguel de motocicletas para entregadores e freelancers. Nosso objetivo é democratizar o acesso ao trabalho, fornecendo veículos confiáveis com manutenção garantida e suporte ao cliente. Aqui no app, você pode se cadastrar, ver as motocicletas disponíveis, conferir os pontos de aluguel e conhecer mais sobre nossa equipe e missão.",
+    "button": "Começar"
+  },
+  "cadastro": {
+    "title": "Cadastro de Usuário",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Senha",
+    "registerButton": "Cadastrar",
+    "alreadyHaveAccount": "Já tem uma conta? Entre agora",
+    "errors": {
+      "invalidEmail": "Por favor, insira um email válido.",
+      "emailRequired": "Preencha o campo de email.",
+      "passwordRequired": "Preencha o campo de senha.",
+      "emailAlreadyRegistered": "Este email já está cadastrado.",
+      "networkError": "Erro de rede. Verifique sua conexão e tente novamente.",
+      "unexpectedError": "Ocorreu um erro inesperado. Tente novamente."
+    }
+  },
+  "login": {
+    "title": "Login de Usuário",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Senha",
+    "loginButton": "Entrar",
+    "loading": "Carregando...",
+    "registerText": "Não tem conta? Cadastre-se aqui",
+    "errors": {
+      "invalidEmail": "Por favor, insira um email válido.",
+      "credentialsIncorrect": "Credenciais incorretas. Verifique seu email e senha.",
+      "networkError": "Erro de rede. Verifique sua conexão e tente novamente.",
+      "unexpectedError": "Ocorreu um erro inesperado. Tente novamente.",
+      "fieldsRequired": "Preencha todos os campos."
+    }
+  },
+  "paginaInicial": {
+    "title": "Registre a sua Moto",
+    "button": "Cadastrar Moto",
+    "loading": "Cadastrando...",
+    "errors": {
+      "modelPlateRequired": "Modelo e placa são obrigatórios.",
+      "userNotLoggedIn": "Você precisa estar logado para cadastrar a moto.",
+      "failedRegister": "Não foi possível cadastrar a moto."
+    },
+    "success": "Moto cadastrada com sucesso!"
+  },
+  "listaMotos": {
+    "title": "Lista de Motos Cadastradas",
+    "noData": "Nenhuma moto cadastrada ainda.",
+    "pagination": "Página {{pagina}} de {{totalPaginas}}",
+    "buttons": {
+      "previous": "⬅️ Anterior",
+      "next": "Próxima ➡️",
+      "goToYard": "🚗 Ir para o Pátio",
+      "addNewMotorcycle": "🏍️ Cadastrar Nova Moto"
+    },
+    "modal": {
+      "title": "Editar Moto",
+      "saveButton": "Salvar",
+      "cancelButton": "Cancelar",
+      "errors": {
+        "modelPlateRequired": "Modelo e placa são obrigatórios.",
+        "failedEdit": "Não foi possível editar a moto."
+      },
+      "loading": "Carregando..."
+    },
+    "alerts": {
+      "deleteConfirm": "Deseja excluir esta moto?",
+      "deleteSuccess": "Moto deletada com sucesso!",
+      "loadError": "Não foi possível carregar as motos."
+    },
+    "edit": "✏️ Editar",
+    "delete": "🗑️ Excluir"
+  },
+  "telaMottu": {
+    "title": "Moto cadastrada!",
+    "labels": {
+      "model": "Nome da Moto",
+      "plate": "Placa",
+      "cpf": "CPF do Dono"
+    },
+    "noData": "SEM DADOS",
+    "goToListButton": "Ir p/ Lista de Motos"
+  },
+  "integrantes": {
+    "title": "Nosso Time",
+    "github": "GitHub"
+  },
+  "drawer": {
+    "home": "Página Inicial",
+    "register": "Faça seu cadastro",
+    "login": "Entre com sua conta",
+    "registerMotorcycle": "Registre sua Moto",
+    "mottu": "Mottu",
+    "yards": "Pátios",
+    "motorcycleList": "Lista de Motos",
+    "team": "Nosso Time",
+    "yardsAndSectors": "Pátios e Setores"
+  }
+}

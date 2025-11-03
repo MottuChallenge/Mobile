@@ -2,42 +2,55 @@ import { Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image } from
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from "../contexts/ThemeContext";
 import ThemeToggleButton from '../components/ToggleButtonTheme';
+import { useTranslation } from 'react-i18next';
+import i18n from '../i18n/i18n';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const { colors } = useThemeContext();
+  const { t } = useTranslation();
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'pt' ? 'en' : 'pt';
+    i18n.changeLanguage(newLang);
+  };
+
   return (
-    <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
       <ThemeToggleButton />
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      
+      <TouchableOpacity style={[styles.button, { backgroundColor: '#ADFF2F', marginBottom: 20 }]} onPress={toggleLanguage}>
+        <Text style={styles.buttonText}>
+          {i18n.language === 'pt' ? 'Switch to English' : 'Mudar para Português'}
+        </Text>
+      </TouchableOpacity>
+
       <Image
         source={require('../assets/moto.png')}
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={styles.title}>Bem-vindo à Mottu</Text>
-      <Text style={styles.subtitle}>Mobilidade urbana com inovação e praticidade</Text>
 
-      <Text style={styles.description}>
-        A Mottu é uma startup que oferece aluguel de motos para entregadores e autônomos. Nosso
-        objetivo é democratizar o acesso ao trabalho, fornecendo veículos confiáveis com manutenção
-        garantida e suporte ao cliente. Aqui no app, você pode cadastrar-se, visualizar motos
-        disponíveis, consultar pátios e saber mais sobre nossa equipe e missão.
-      </Text>
+      <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
+      <Text style={styles.description}>{t('home.description')}</Text>
+
       <Image
         source={require('../assets/logo_mottu.png')}
         style={styles.logo_icon}
         resizeMode="contain"
       />
+
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate('login')}
       >
-        <Text style={styles.buttonText}>Começar</Text>
+        <Text style={styles.buttonText}>{t('home.button')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -50,10 +63,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     color: '#32CD32',
-    fontWeight: '900', 
+    fontWeight: '900',
     marginBottom: 10,
     textAlign: 'center',
-    fontFamily: 'System', 
+    fontFamily: 'System',
   },
   subtitle: {
     fontSize: 20,

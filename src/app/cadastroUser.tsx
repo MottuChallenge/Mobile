@@ -3,67 +3,67 @@ import { ScrollView, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { createUser } from "../api/auth";
+import { useTranslation } from 'react-i18next';
 
 export default function CadastroUser() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { colors } = useThemeContext();
   const router = useRouter();
+  const { t } = useTranslation();
 
-  // Função para tratar cadastro de usuário
   const handleCadastroUser = async () => {
-    if (email && password) {
-      const isValidEmail = /\S+@\S+\.\S+/;
-      if (!isValidEmail.test(email)) {
-        Alert.alert("Erro", "Por favor, insira um email válido.");
-        return;
-      }
+  if (email && password) {
+    const isValidEmail = /\S+@\S+\.\S+/;
+    if (!isValidEmail.test(email)) {
+      Alert.alert(t('cadastro.errors.invalidEmail'));
+      return;
+    }
 
-      try {
-        await createUser(email, password, router);
-      } catch (error) {
-        if (error.response && error.response.status === 400) {
-          Alert.alert("Erro", "Este email já está cadastrado.");
-        } else if (error.message === "Network Error") {
-          Alert.alert("Erro", "Erro de rede. Verifique sua conexão e tente novamente.");
-        } else {
-          Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente.");
-        }
-      }
-    } else {
-      if (!email) {
-        Alert.alert("Erro", "Preencha o campo de email.");
+    try {
+      await createUser(email, password, router);
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        Alert.alert(t('cadastro.errors.emailAlreadyRegistered'));
+      } else if (error.message === "Network Error") {
+        Alert.alert(t('cadastro.errors.networkError'));
       } else {
-        Alert.alert("Erro", "Preencha o campo de senha.");
+        Alert.alert(t('cadastro.errors.unexpectedError'));
       }
     }
-  };
-
+  } else {
+    if (!email) {
+      Alert.alert(t('cadastro.errors.emailRequired'));
+    } else {
+      Alert.alert(t('cadastro.errors.passwordRequired'));
+    }
+  }
+};
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
       <Image source={require('../assets/logo_mottu.png')} style={styles.logo} resizeMode="contain" />
-      <Text style={styles.title}>Cadastro de Usuário</Text>
+      <Text style={styles.title}>{t('cadastro.title')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder={t('cadastro.emailPlaceholder')}
         placeholderTextColor="#000000"
         value={email}
         onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}
-        placeholder="Senha"
+        placeholder={t('cadastro.passwordPlaceholder')}
         placeholderTextColor="#000000"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
       <TouchableOpacity style={styles.button} onPress={handleCadastroUser}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
+        <Text style={styles.buttonText}>{t('cadastro.registerButton')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push('/login')}>
-        <Text style={styles.loginText}>Já tem uma conta? Entre agora</Text>
+        <Text style={styles.loginText}>{t('cadastro.alreadyHaveAccount')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

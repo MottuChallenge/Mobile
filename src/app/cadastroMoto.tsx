@@ -1,17 +1,18 @@
 import { useState } from "react";
-import {Text, StyleSheet, Alert, TouchableOpacity, Image, ScrollView, Platform, View } from "react-native";
+import { Text, StyleSheet, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../contexts/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addMotorcycle, Motorcycle } from "../api/motos";
 import MotorcycleForm from "../components/MotorcycleForm";
+import { useTranslation } from 'react-i18next';
 
 export default function PaginaInicial() {
+  const { t } = useTranslation();
   const [modelo, setModelo] = useState("");
   const [placa, setPlaca] = useState("");
   const [spotId, setSpotId] = useState(""); 
   const [lastRevisionDate, setLastRevisionDate] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [engineType, setEngineType] = useState("");
   const [loading, setLoading] = useState(false);
   const { colors } = useThemeContext();
@@ -21,20 +22,20 @@ export default function PaginaInicial() {
     try {
       const user = await AsyncStorage.getItem("@user");
       if (!user) {
-        Alert.alert("Erro", "Você precisa estar logado para cadastrar a moto.");
+        Alert.alert(t('paginaInicial.errors.userNotLoggedIn'));
         router.push("/login"); 
         return false;
       }
       return true;
     } catch (error) {
-      Alert.alert("Erro", "Ocorreu um erro ao verificar o usuário.");
+      Alert.alert(t('paginaInicial.errors.unexpectedError'));
       return false;
     }
   };
 
   const cadastrarMoto = async () => {
     if (!modelo || !placa) {
-      Alert.alert("Erro", "Modelo e placa são obrigatórios.");
+      Alert.alert(t('paginaInicial.errors.modelAndPlateRequired'));
       return;
     }
 
@@ -44,16 +45,9 @@ export default function PaginaInicial() {
     setLoading(true);
 
     try {
-      let dataRevisao: string | null = null;
-      if (lastRevisionDate && lastRevisionDate.trim() !== "") {
-        dataRevisao = new Date(lastRevisionDate).toISOString();
-      } else {
-        dataRevisao = new Date(Date.now()).toISOString();
-      }
-      let spotIdMotorcycle: string | null = spotId;
-      if(spotId && spotId.trim() === "") {
-        spotIdMotorcycle = null;
-      }
+      let dataRevisao = lastRevisionDate?.trim() ? new Date(lastRevisionDate).toISOString() : new Date().toISOString();
+      const spotIdMotorcycle = spotId?.trim() || null;
+
       const motorcycle: Motorcycle = {
         model: modelo,
         plate: placa,
@@ -64,7 +58,7 @@ export default function PaginaInicial() {
 
       await addMotorcycle(motorcycle);
 
-      Alert.alert("Sucesso", "Moto cadastrada com sucesso!");
+      Alert.alert(t('paginaInicial.success.title'), t('paginaInicial.success.message'));
       setModelo("");
       setPlaca("");
       setSpotId("");
@@ -72,7 +66,7 @@ export default function PaginaInicial() {
       setEngineType("");
       router.push("/mottu");
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível cadastrar a moto.");
+      Alert.alert(t('paginaInicial.errors.unexpectedError'));
       console.error(error);
     } finally {
       setLoading(false);
@@ -81,12 +75,8 @@ export default function PaginaInicial() {
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
-      <Image
-        source={require('../assets/logo_mottu.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      <Text style={styles.title}>Registre a sua Moto</Text>
+      <Image source={require('../assets/logo_mottu.png')} style={styles.logo} resizeMode="contain" />
+      <Text style={styles.title}>{t('paginaInicial.title')}</Text>
 
       <MotorcycleForm
         formData={{ model: modelo, plate: placa, spotId: spotId, lastRevisionDate: lastRevisionDate, engineType: engineType }}
@@ -102,7 +92,9 @@ export default function PaginaInicial() {
       />
 
       <TouchableOpacity style={styles.button} onPress={cadastrarMoto} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? "Cadastrando..." : "Cadastrar Moto"}</Text>
+        <Text style={styles.buttonText}>
+          {loading ? t('paginaInicial.loading') : t('paginaInicial.button')}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );

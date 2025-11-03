@@ -3,8 +3,10 @@ import { ScrollView, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { userLogin } from "../api/auth";
+import { useTranslation } from 'react-i18next'; // Supondo que você use react-i18next
 
 export default function Login() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,7 +21,7 @@ export default function Login() {
     if (email && password) {
       const isValidEmail = /\S+@\S+\.\S+/;
       if (!isValidEmail.test(email)) {
-        Alert.alert("Erro", "Por favor, insira um email válido.");
+        Alert.alert(t('login.errors.invalidEmail'));
         return;
       }
 
@@ -29,11 +31,11 @@ export default function Login() {
         router.push('/listamotos');
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          Alert.alert("Erro", "Credenciais incorretas. Verifique seu email e senha.");
+          Alert.alert(t('login.errors.credentialsIncorrect'));
         } else if (error.message === "Network Error") {
-          Alert.alert("Erro", "Erro de rede. Verifique sua conexão e tente novamente.");
+          Alert.alert(t('login.errors.networkError'));
         } else {
-          Alert.alert("Erro", "Ocorreu um erro inesperado. Tente novamente.");
+          Alert.alert(t('login.errors.unexpectedError'));
         }
       } finally {
         setLoading(false);
@@ -41,18 +43,18 @@ export default function Login() {
     } else {
       if (!email) emailInput.current.focus();
       else passwordInput.current.focus();
-      Alert.alert("Erro", "Preencha todos os campos.");
+      Alert.alert(t('login.errors.fieldsRequired'));
     }
   };
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
       <Image source={require('../assets/logo_mottu.png')} style={styles.logo} resizeMode="contain" />
-      <Text style={styles.title}>Login de Usuário</Text>
+      <Text style={styles.title}>{t('login.title')}</Text>
       <TextInput
         ref={emailInput}
         style={styles.input}
-        placeholder="Email"
+        placeholder={t('login.emailPlaceholder')}
         placeholderTextColor="#000000"
         value={email}
         onChangeText={setEmail}
@@ -61,7 +63,7 @@ export default function Login() {
       <TextInput
         ref={passwordInput}
         style={styles.input}
-        placeholder="Senha"
+        placeholder={t('login.passwordPlaceholder')}
         placeholderTextColor="#000000"
         value={password}
         onChangeText={setPassword}
@@ -69,12 +71,12 @@ export default function Login() {
         accessibilityLabel="Password input"
       />
       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? 'Carregando...' : 'Entrar'}</Text>
+        <Text style={styles.buttonText}>{loading ? t('login.loading') : t('login.loginButton')}</Text>
       </TouchableOpacity>
 
       {/* Botão para redirecionar para a tela de cadastro */}
       <TouchableOpacity onPress={() => router.push('/cadastroUser')}>
-        <Text style={styles.registerText}>Não tem conta? Cadastre-se aqui</Text>
+        <Text style={styles.registerText}>{t('login.registerText')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
