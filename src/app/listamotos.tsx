@@ -35,7 +35,7 @@ export default function ListaMotos() {
     model: "",
     plate: "",
     lastRevisionDate: "",
-    engineType: ""
+    engineType: 0
   });
 
   const router = useRouter();
@@ -53,12 +53,12 @@ export default function ListaMotos() {
 
   const confirmarDeletarMoto = (id: number) =>
     Alert.alert(
-      t("listaMotos.alerts.deleteConfirmTitle"),
-      t("listaMotos.alerts.deleteConfirmMessage"),
+      t("listaMotos.alerts.deleteConfirm"),
+      "",
       [
         { text: t("listaMotos.buttons.previous"), style: "cancel" },
         {
-          text: t("listaMotos.buttons.delete"),
+          text: t("listaMotos.delete"),
           style: "destructive",
           onPress: () => deletarMoto(id)
         }
@@ -79,7 +79,7 @@ export default function ListaMotos() {
         engineType: motoCompleta.engineType?.toString() || ""
       });
     } catch (error) {
-      Alert.alert(t("listaMotos.alerts.loadModalError"));
+      Alert.alert(t("listaMotos.modal.errors.failedEdit"));
       setModalVisible(false);
       console.error(error);
     } finally {
@@ -89,7 +89,7 @@ export default function ListaMotos() {
 
   const salvarEdicao = async () => {
     if (!editFormData.model || !editFormData.plate) {
-      Alert.alert(t("listaMotos.alerts.requiredFields"));
+      Alert.alert(t("listaMotos.modal.errors.modelPlateRequired"));
       return;
     }
     if (!editandoMoto) return;
@@ -105,11 +105,11 @@ export default function ListaMotos() {
         ...editFormData,
         lastRevisionDate
       });
-      Alert.alert(t("listaMotos.alerts.editSuccess"));
+      Alert.alert(t("listaMotos.modal.saveButton"));
       setModalVisible(false);
       carregarMotos(motorcyclePagination?.page ?? 1);
     } catch (error) {
-      Alert.alert(t("listaMotos.alerts.editError"));
+      Alert.alert(t("listaMotos.modal.errors.failedEdit"));
       console.error(error);
     } finally {
       setLoadingModal(false);
@@ -123,7 +123,7 @@ export default function ListaMotos() {
       model: "",
       plate: "",
       lastRevisionDate: "",
-      engineType: ""
+      engineType: 0
     });
   };
 
@@ -149,11 +149,12 @@ export default function ListaMotos() {
   const MotoItem = ({ moto }: { moto: Motorcycle }) => (
     <View style={styles.item}>
       <Text style={styles.text}>
-        🏍️ {t("paginaInicial.title")}: {moto.model}
+        🏍️ {t("telaMottu.labels.model")}: {moto.model}
       </Text>
-      <Text style={styles.text}>📄 Placa: {moto.plate}</Text>
+      <Text style={styles.text}>📄 {t("telaMottu.labels.plate")}: {moto.plate}</Text>
       <Text style={styles.text}>📍 Spot ID: {moto.spotId}</Text>
-      <Text style={styles.text}>🗓 Última Revisão: {moto.lastRevisionDate}</Text>
+      <Text style={styles.text}>🗓 {t("paginaInicial.loading")}: {moto.lastRevisionDate}</Text>
+
       <View
         style={{
           flexDirection: "row",
@@ -166,7 +167,7 @@ export default function ListaMotos() {
           onPress={() => abrirModalEdicao(moto)}
         >
           <Text style={styles.smallButtonText}>
-            {t("listaMotos.buttons.edit")}
+            {t("listaMotos.edit")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -174,7 +175,7 @@ export default function ListaMotos() {
           onPress={() => confirmarDeletarMoto(moto.id)}
         >
           <Text style={styles.smallButtonText}>
-            {t("listaMotos.buttons.delete")}
+            {t("listaMotos.delete")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -185,76 +186,81 @@ export default function ListaMotos() {
   const totalPaginas = motorcyclePagination?.totalPages ?? 1;
 
   return (
-  <View style={[styles.container, { backgroundColor: colors.background }]}>
-    <Text style={styles.title}>{t("listaMotos.title")}</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={styles.title}>{t("listaMotos.title")}</Text>
 
-    {loading ? (
-      <ActivityIndicator size="large" color={colors.input} />
-    ) : !motorcyclePagination || motorcyclePagination.items.length === 0 ? (
-      <Text style={styles.info}>{t("listaMotos.noMotorcycles")}</Text>
-    ) : (
-      <>
-        {/* Lista com rolagem limitada */}
-        <View style={styles.listContainer}>
-          <FlatList
-            data={motorcyclePagination.items}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <MotoItem moto={item} />}
-            showsVerticalScrollIndicator={true}
-          />
-        </View>
-
-        {/* Paginação sempre visível */}
-        <View style={styles.paginationSection}>
-          <Text style={styles.paginationInfo}>
-            Página {paginaAtual} de {totalPaginas}
-          </Text>
-
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[
-                styles.actionButton,
-                {
-                  backgroundColor: motorcyclePagination.hasPrevious
-                    ? "#1E90FF"
-                    : "#666",
-                  flex: 1,
-                  marginRight: 5
-                }
-              ]}
-              disabled={!motorcyclePagination.hasPrevious}
-              onPress={() => {
-                if (motorcyclePagination.hasPrevious)
-                  carregarMotos(paginaAtual - 1);
-              }}
-            >
-              <Text style={styles.actionButtonText}>⬅️ Anterior</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.actionButton,
-                {
-                  backgroundColor: motorcyclePagination.hasNext
-                    ? "#32CD32"
-                    : "#666",
-                  flex: 1,
-                  marginLeft: 5
-                }
-              ]}
-              disabled={!motorcyclePagination.hasNext}
-              onPress={() => {
-                if (motorcyclePagination.hasNext)
-                  carregarMotos(paginaAtual + 1);
-              }}
-            >
-              <Text style={styles.actionButtonText}>Próxima ➡️</Text>
-            </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color={colors.input} />
+      ) : !motorcyclePagination || motorcyclePagination.items.length === 0 ? (
+        <Text style={styles.info}>{t("listaMotos.noData")}</Text>
+      ) : (
+        <>
+          <View style={styles.listContainer}>
+            <FlatList
+              data={motorcyclePagination.items}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => <MotoItem moto={item} />}
+              showsVerticalScrollIndicator={true}
+            />
           </View>
-        </View>
-      </>
-    )}
-  </View>
+
+          <View style={styles.paginationSection}>
+            <Text style={styles.paginationInfo}>
+              {t("listaMotos.pagination", {
+                pagina: paginaAtual,
+                totalPaginas: totalPaginas
+              })}
+            </Text>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.actionButton,
+                  {
+                    backgroundColor: motorcyclePagination.hasPrevious
+                      ? "#1E90FF"
+                      : "#666",
+                    flex: 1,
+                    marginRight: 5
+                  }
+                ]}
+                disabled={!motorcyclePagination.hasPrevious}
+                onPress={() => {
+                  if (motorcyclePagination.hasPrevious)
+                    carregarMotos(paginaAtual - 1);
+                }}
+              >
+                <Text style={styles.actionButtonText}>
+                  {t("listaMotos.buttons.previous")}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.actionButton,
+                  {
+                    backgroundColor: motorcyclePagination.hasNext
+                      ? "#32CD32"
+                      : "#666",
+                    flex: 1,
+                    marginLeft: 5
+                  }
+                ]}
+                disabled={!motorcyclePagination.hasNext}
+                onPress={() => {
+                  if (motorcyclePagination.hasNext)
+                    carregarMotos(paginaAtual + 1);
+                }}
+              >
+                <Text style={styles.actionButtonText}>
+                  {t("listaMotos.buttons.next")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
+    </View>
   );
 }
 
@@ -299,7 +305,7 @@ const styles = StyleSheet.create({
   paginationInfo: { color: "#7CFC00", fontSize: 16, marginBottom: 10 },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     width: "100%"
   },
   actionButton: {
@@ -309,4 +315,3 @@ const styles = StyleSheet.create({
   },
   actionButtonText: { color: "#FFF", fontWeight: "bold", fontSize: 16 }
 });
-

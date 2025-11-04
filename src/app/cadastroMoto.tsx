@@ -47,18 +47,19 @@ export default function PaginaInicial() {
     try {
       let dataRevisao = lastRevisionDate?.trim() ? new Date(lastRevisionDate).toISOString() : new Date().toISOString();
       const spotIdMotorcycle = spotId?.trim() || null;
+      
 
       const motorcycle: Motorcycle = {
         model: modelo,
         plate: placa,
         spotId: spotIdMotorcycle,
         lastRevisionDate: dataRevisao,
-        engineType: engineType
+        engineType: Number.parseInt(engineType)
       };
 
       await addMotorcycle(motorcycle);
 
-      Alert.alert(t('paginaInicial.success.title'), t('paginaInicial.success.message'));
+      Alert.alert(t('paginaInicial.success'), t('paginaInicial.success'));
       setModelo("");
       setPlaca("");
       setSpotId("");

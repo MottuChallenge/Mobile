@@ -15,7 +15,7 @@ export default function Layout() {
             name="index"
             options={{
               drawerItemStyle: { display: "none" },
-              title: t("drawer.home"),headerShown: false
+              title: t("drawer.home"),  headerShown: false,
             }}
           />
           <Drawer.Screen

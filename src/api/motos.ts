@@ -9,7 +9,7 @@ export type Motorcycle = {
     model: string;
     plate: string;
     lastRevisionDate: string;
-    engineType: string;
+    engineType: number;
     spotId?: string;
 };
 
