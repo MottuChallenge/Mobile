@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10
   },
-  paginationInfo: { color: "#FFF", fontSize: 16, marginBottom: 10 },
+  paginationInfo: { color: "#7CFC00", fontSize: 16, marginBottom: 10 },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
