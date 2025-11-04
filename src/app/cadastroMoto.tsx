@@ -65,7 +65,7 @@ export default function PaginaInicial() {
       setSpotId("");
       setLastRevisionDate("");
       setEngineType("");
-      router.push("/mottu");
+      router.push("/listamotos");
     } catch (error) {
       Alert.alert(t('paginaInicial.errors.unexpectedError'));
       console.error(error);
