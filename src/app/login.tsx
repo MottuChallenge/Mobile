@@ -3,7 +3,7 @@ import { ScrollView, Text, TextInput, StyleSheet, Alert, TouchableOpacity, Image
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { userLogin } from "../api/auth";
-import { useTranslation } from 'react-i18next'; // Supondo que você use react-i18next
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
   const { t } = useTranslation();
@@ -27,7 +27,7 @@ export default function Login() {
 
       setLoading(true);
       try {
-        await userLogin(email, password, router);
+        await userLogin(email, password);
         router.push('/listamotos');
       } catch (error) {
         if (error.response && error.response.status === 401) {

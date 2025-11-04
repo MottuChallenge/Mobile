@@ -27,27 +27,13 @@ export const createUser = (email, password, router) => {
     });
 }
 
-export const userLogin = (email, password, router) => {
-  signInWithEmailAndPassword(auth, email, password)
-    .then(async (userCredential) => {
-      const user = userCredential.user;
-      await AsyncStorage.setItem('@user', JSON.stringify(user));
-      router.push('/index');
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      
-      // Tratamento de erro mais específico para login
-      let message = "Ocorreu um erro ao tentar fazer login. Tente novamente.";
-
-      if (errorCode === "auth/wrong-password") {
-        message = "A senha informada está incorreta. Tente novamente.";
-      } else if (errorCode === "auth/user-not-found") {
-        message = "Nenhum usuário encontrado com esse email. Verifique o email e tente novamente.";
-      } else if (errorCode === "auth/invalid-email") {
-        message = "O email informado não é válido. Verifique e tente novamente.";
-      }
-
-      Alert.alert("Erro ao fazer login", message);
-    });
+export const userLogin = async (email: string, password: string) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    await AsyncStorage.setItem('@user', JSON.stringify(user));
+  } catch (error) {
+    const errorCode = error.code;
+    Alert.alert("Erro ao fazer login", error.message);
+  }
 }
