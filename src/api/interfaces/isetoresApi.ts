@@ -2,6 +2,7 @@ import { PointOfInterest } from "../../utils/pointsOfInterest";
 
 export interface ISetoresApi {
   findSetores(yardId: string): Promise<Sector[]>;
+  findSetorById(sectorId: string): Promise<Sector | null>;
 }
 
 export type Sector = {
