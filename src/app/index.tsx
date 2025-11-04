@@ -1,18 +1,19 @@
-import { Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from "../contexts/ThemeContext";
 import ThemeToggleButton from '../components/ToggleButtonTheme';
 import { useTranslation } from 'react-i18next';
-import i18n from '../i18n/i18n';
+import { useState } from 'react';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const { colors } = useThemeContext();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [showLangMenu, setShowLangMenu] = useState(false);
 
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'pt' ? 'en' : 'pt';
-    i18n.changeLanguage(newLang);
+  const changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+    setShowLangMenu(false);
   };
 
   return (
@@ -20,26 +21,30 @@ export default function HomeScreen() {
       <ThemeToggleButton />
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
 
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: '#ADFF2F', marginBottom: 20 }]}
-        onPress={() => {
-          const nextLanguage =
-            i18n.language === 'pt'
-              ? 'en'
-              : i18n.language === 'en'
-                ? 'es'
-                : 'pt';
-          i18n.changeLanguage(nextLanguage);
-        }}
-      >
-        <Text style={styles.buttonText}>
-          {i18n.language === 'pt'
-            ? 'Mudar para Inglês'
-            : i18n.language === 'en'
-              ? 'Cambiar a Español'
-              : 'Switch to Portuguese'}
-        </Text>
-      </TouchableOpacity>F
+      <View style={styles.languageContainer}>
+        <TouchableOpacity
+          style={[styles.languageButton, { backgroundColor: '#32CD32' }]}
+          onPress={() => setShowLangMenu(!showLangMenu)}
+        >
+          <Text style={styles.languageButtonText}>
+            🌐 {t('home.selectLanguage')}
+          </Text>
+        </TouchableOpacity>
+
+        {showLangMenu && (
+          <View style={styles.languageMenu}>
+            <TouchableOpacity onPress={() => changeLanguage('pt')} style={styles.langOption}>
+              <Text style={styles.langText}>🇧🇷 Português</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => changeLanguage('en')} style={styles.langOption}>
+              <Text style={styles.langText}>🇺🇸 English</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => changeLanguage('es')} style={styles.langOption}>
+              <Text style={styles.langText}>🇪🇸 Español</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
 
       <Image
         source={require('../assets/moto.png')}
@@ -66,7 +71,6 @@ export default function HomeScreen() {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -75,13 +79,44 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 24,
   },
-  title: {
-    fontSize: 32,
-    color: '#32CD32',
-    fontWeight: '900',
-    marginBottom: 10,
+  languageContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  languageButtonText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  languageMenu: {
+    marginTop: 8,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 10,
+    padding: 8,
+    width: 200,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  langOption: {
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+  },
+  langText: {
+    color: '#ADFF2F',
+    fontSize: 16,
     textAlign: 'center',
-    fontFamily: 'System',
   },
   subtitle: {
     fontSize: 20,

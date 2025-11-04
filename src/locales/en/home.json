@@ -1,6 +1,7 @@
 {
   "home": {
     "title": "Welcome to Mottu",
+    "selectLanguage": "Select language",
     "subtitle": "Urban mobility with innovation and convenience",
     "description": "Mottu is a startup that offers motorcycle rentals for delivery drivers and freelancers. Our goal is to democratize access to work by providing reliable vehicles with guaranteed maintenance and customer support. In this app, you can register, view available motorcycles, check rental lots, and learn more about our team and mission.",
     "button": "Get Started"

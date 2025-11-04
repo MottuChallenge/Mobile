@@ -1,6 +1,7 @@
 {
   "home": {
     "title": "Bienvenido a Mottu",
+    "selectLanguage": "Seleccionar idioma",
     "subtitle": "Movilidad urbana con innovación y comodidad",
     "description": "Mottu es una startup que ofrece alquiler de motocicletas para repartidores y trabajadores independientes. Nuestro objetivo es democratizar el acceso al trabajo proporcionando vehículos confiables con mantenimiento garantizado y atención al cliente. En esta aplicación, puedes registrarte, ver las motocicletas disponibles, consultar los patios de alquiler y conocer más sobre nuestro equipo y misión.",
     "button": "Comenzar"

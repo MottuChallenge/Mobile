@@ -1,6 +1,7 @@
 {
   "home": {
     "title": "Bem-vindo à Mottu",
+    "selectLanguage": "Selecionar idioma",
     "subtitle": "Mobilidade urbana com inovação e conveniência",
     "description": "A Mottu é uma startup que oferece aluguel de motocicletas para entregadores e freelancers. Nosso objetivo é democratizar o acesso ao trabalho, fornecendo veículos confiáveis com manutenção garantida e suporte ao cliente. Aqui no app, você pode se cadastrar, ver as motocicletas disponíveis, conferir os pontos de aluguel e conhecer mais sobre nossa equipe e missão.",
     "button": "Começar"
