@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Text, StyleSheet, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../contexts/ThemeContext";
@@ -6,6 +6,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addMotorcycle, Motorcycle } from "../api/motos";
 import MotorcycleForm from "../components/MotorcycleForm";
 import { useTranslation } from 'react-i18next';
+import * as Notifications from "expo-notifications";
+
+// 🔔 Configuração global do comportamento das notificações
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function PaginaInicial() {
   const { t } = useTranslation();
@@ -17,6 +28,32 @@ export default function PaginaInicial() {
   const [loading, setLoading] = useState(false);
   const { colors } = useThemeContext();
   const router = useRouter();
+
+  // ✅ Solicita permissão de notificação ao abrir a tela
+  useEffect(() => {
+    const requestPermission = async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permissão necessária", "Ative as notificações para receber alertas importantes.");
+      }
+    };
+    requestPermission();
+  }, []);
+
+  // 🔔 Função para disparar a notificação (corrigida)
+  const disparaNotificacao = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Moto cadastrada com sucesso! 🏍️",
+        body: "Sua moto foi registrada no sistema.",
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 2,
+        repeats: false,
+      } as Notifications.TimeIntervalTriggerInput,
+    });
+  };
 
   const verificarUsuario = async () => {
     try {
@@ -47,17 +84,19 @@ export default function PaginaInicial() {
     try {
       let dataRevisao = lastRevisionDate?.trim() ? new Date(lastRevisionDate).toISOString() : new Date().toISOString();
       const spotIdMotorcycle = spotId?.trim() || null;
-      
 
       const motorcycle: Motorcycle = {
         model: modelo,
         plate: placa,
         spotId: spotIdMotorcycle,
         lastRevisionDate: dataRevisao,
-        engineType: Number.parseInt(engineType)
+        engineType: Number.parseInt(engineType),
       };
 
       await addMotorcycle(motorcycle);
+
+      // ✅ Dispara a notificação após o sucesso
+      await disparaNotificacao();
 
       Alert.alert(t('paginaInicial.success'), t('paginaInicial.success'));
       setModelo("");
@@ -80,7 +119,13 @@ export default function PaginaInicial() {
       <Text style={styles.title}>{t('paginaInicial.title')}</Text>
 
       <MotorcycleForm
-        formData={{ model: modelo, plate: placa, spotId: spotId, lastRevisionDate: lastRevisionDate, engineType: engineType }}
+        formData={{
+          model: modelo,
+          plate: placa,
+          spotId: spotId,
+          lastRevisionDate: lastRevisionDate,
+          engineType: engineType
+        }}
         setFormData={(fd) => {
           setModelo(fd.model);
           setPlaca(fd.plate);
