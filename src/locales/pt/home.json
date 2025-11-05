@@ -87,7 +87,8 @@
   },
   "integrantes": {
     "title": "Nosso Time",
-    "github": "GitHub"
+    "github": "GitHub",
+    "verHash": "Pagina de Commit"
   },
   "drawer": {
     "home": "Página Inicial",

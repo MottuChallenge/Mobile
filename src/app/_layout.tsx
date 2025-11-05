@@ -15,7 +15,7 @@ export default function Layout() {
             name="index"
             options={{
               drawerItemStyle: { display: "none" },
-              title: t("drawer.home"),  headerShown: false,
+              title: t("drawer.home"), headerShown: false,
             }}
           />
           <Drawer.Screen
@@ -53,6 +53,10 @@ export default function Layout() {
           <Drawer.Screen
             name="setorSpots"
             options={{ drawerItemStyle: { display: "none" }, headerShown: false }}
+          />
+          <Drawer.Screen
+            name="hash"
+            options={{ title: 'Pagina de Commit' }}
           />
         </Drawer>
       </ThemeProvider>

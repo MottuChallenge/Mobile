@@ -87,7 +87,8 @@
   },
   "integrantes": {
     "title": "Nuestro Equipo",
-    "github": "GitHub"
+    "github": "GitHub",
+    "verHash": "Página de confirmación"
   },
   "drawer": {
     "home": "Inicio",
