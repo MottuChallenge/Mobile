@@ -88,7 +88,7 @@
   "integrantes": {
     "title": "Nuestro Equipo",
     "github": "GitHub",
-    "verHash": "Página de confirmación"
+    "verHash": "Página de Commit"
   },
   "drawer": {
     "home": "Inicio",
@@ -100,5 +100,11 @@
     "motorcycleList": "Lista de Motocicletas",
     "team": "Nuestro Equipo",
     "yardsAndSectors": "Patios y Sectores"
+  },
+  "commit": {
+    "title": "Último Commit",
+    "hash": "Hash:",
+    "copied": "¡Hash copiado!",
+    "tip": "Toca para copiar el hash"
   }
 }

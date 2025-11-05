@@ -87,7 +87,8 @@
   },
   "integrantes": {
     "title": "Our Team",
-    "github": "GitHub"
+    "github": "GitHub",
+    "verHash": "Commit Page"
   },
   "drawer": {
     "home": "Home",
@@ -99,5 +100,11 @@
     "motorcycleList": "Motorcycle List",
     "team": "Our Team",
     "yardsAndSectors": "Yards and Sectors"
+  },
+  "commit": {
+    "title": "Latest Commit",
+    "hash": "Hash:",
+    "copied": "Hash copied!",
+    "tip": "Tap to copy the hash"
   }
 }

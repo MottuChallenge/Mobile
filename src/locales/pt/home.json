@@ -100,5 +100,11 @@
     "motorcycleList": "Lista de Motos",
     "team": "Nosso Time",
     "yardsAndSectors": "Pátios e Setores"
+  },
+  "commit": {
+    "title": "Último Commit",
+    "hash": "Hash:",
+    "copied": "Hash copiado!",
+    "tip": "Toque para copiar o hash"
   }
 }

@@ -56,7 +56,7 @@ export default function Layout() {
           />
           <Drawer.Screen
             name="hash"
-            options={{ title: 'Pagina de Commit' }}
+            options={{ title: 'Commit' }}
           />
         </Drawer>
       </ThemeProvider>
