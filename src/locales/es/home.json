@@ -88,7 +88,7 @@
   "integrantes": {
     "title": "Nuestro Equipo",
     "github": "GitHub",
-    "verHash": "Página de Commit"
+    "verHash": "Página de confirmación"
   },
   "drawer": {
     "home": "Inicio",
@@ -102,9 +102,10 @@
     "yardsAndSectors": "Patios y Sectores"
   },
   "commit": {
-    "title": "Último Commit",
-    "hash": "Hash:",
-    "copied": "¡Hash copiado!",
-    "tip": "Toca para copiar el hash"
+    "title": "Confirmación de Versión",
+    "hash": "Hash del Commit:",
+    "copied": "¡Hash copiado al portapapeles!",
+    "tip": "Pulsa el hash para copiarlo."
   }
 }
+

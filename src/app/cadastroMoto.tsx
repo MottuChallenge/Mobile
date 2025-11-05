@@ -29,7 +29,6 @@ export default function PaginaInicial() {
   const { colors } = useThemeContext();
   const router = useRouter();
 
-  // ✅ Solicita permissão de notificação ao abrir a tela
   useEffect(() => {
     const requestPermission = async () => {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -40,7 +39,6 @@ export default function PaginaInicial() {
     requestPermission();
   }, []);
 
-  // 🔔 Função para disparar a notificação (corrigida)
   const disparaNotificacao = async () => {
     await Notifications.scheduleNotificationAsync({
       content: {
