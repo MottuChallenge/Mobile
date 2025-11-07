@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { Sector, Spots } from '../api/interfaces/isetoresApi';
@@ -12,19 +12,18 @@ export default function SetorSpots() {
   const [loading, setLoading] = useState(true);
   const [sector, setSector] = useState<Sector | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
-
   const setoresApi = useMemo(() => createSetoresApi(), []);
 
   useEffect(() => {
-    //if (!sectorId) return;
+    if (!sectorId) return;
     let mounted = true;
 
     const load = async () => {
       setLoading(true);
       try {
-        const all = await setoresApi.findSetores(yardId || '');
-        const found = all.find((s) => s.id === sectorId) || null;
+        const found = await setoresApi.findSetorById(sectorId);
+        console.log(found);
+        
         if (mounted) setSector(found);
       } catch (err: any) {
         if (mounted) setError(err.message || String(err));
@@ -38,54 +37,11 @@ export default function SetorSpots() {
       mounted = false;
     };
   }, [yardId, sectorId]);
-
-  const allPoints = useMemo(() => {
-    if (!sector) return [];
-    const pts: { x: number; y: number }[] = [];
-
-    if (sector.pointsOfInterest?.length) {
-      pts.push(...sector.pointsOfInterest.map((p) => ({ x: p.x, y: p.y })));
-    } else if (sector.spots?.length) {
-      pts.push(...sector.spots.map((sp) => ({ x: sp.x, y: sp.y })));
-    }
-
-    return pts;
+  // prepare spots array for the grid view
+  const spotsArray = useMemo(() => {
+    if (!sector) return [] as Spots[];
+    return sector.spots ?? [];
   }, [sector]);
-
-  const bounds = useMemo(() => {
-    if (!allPoints.length) return null;
-
-    let minX = Math.min(...allPoints.map((p) => p.x));
-    let minY = Math.min(...allPoints.map((p) => p.y));
-    let maxX = Math.max(...allPoints.map((p) => p.x));
-    let maxY = Math.max(...allPoints.map((p) => p.y));
-
-    // Evita divisão por zero
-    if (minX === maxX) { minX -= 1; maxX += 1; }
-    if (minY === maxY) { minY -= 1; maxY += 1; }
-
-    return { minX, minY, maxX, maxY };
-  }, [allPoints]);
-
-  const padding = 12;
-  const scaleInfo = useMemo(() => {
-    if (!bounds || canvasSize.width === 0 || canvasSize.height === 0) return null;
-
-    const worldW = bounds.maxX - bounds.minX;
-    const worldH = bounds.maxY - bounds.minY;
-    const availW = Math.max(10, canvasSize.width - padding * 2);
-    const availH = Math.max(10, canvasSize.height - padding * 2);
-    const scale = Math.min(availW / worldW, availH / worldH);
-    const offsetX = padding - bounds.minX * scale + (availW - worldW * scale) / 2;
-    const offsetY = padding - bounds.minY * scale + (availH - worldH * scale) / 2;
-
-    return { scale, offsetX, offsetY };
-  }, [bounds, canvasSize]);
-
-  const transformPoint = (x: number, y: number) => {
-    if (!scaleInfo) return { left: 0, top: 0 };
-    return { left: x * scaleInfo.scale + scaleInfo.offsetX, top: y * scaleInfo.scale + scaleInfo.offsetY };
-  };
 
   // 🚨 Loading
   if (loading)
@@ -111,46 +67,48 @@ export default function SetorSpots() {
       </View>
     );
 
+  const total = spotsArray.length;
+  const occupied = spotsArray.filter((s) => s.motorcycleId || s.status === 'ocupada' || s.status === 'occupied' || s.status === 'ocupado').length;
+
+  const renderSpot = ({ item }: { item: Spots }) => {
+    const occupiedSpot = item.motorcycleId || item.status === 'ocupada' || item.status === 'occupied' || item.status === 'ocupado';
+    const bg = occupiedSpot ? '#e74c3c' : '#2ecc71';
+    return (
+      <TouchableOpacity
+        style={[styles.spotCard, { backgroundColor: bg }]}
+        onPress={() => Alert.alert(`Vaga ${item.spotId}`, item.motorcycleId ? `Moto: ${item.motorcycleId}` : 'Vaga livre')}
+      >
+        <Text style={styles.spotIdText}>{item.spotId}</Text>
+        <Text style={styles.spotStatusText}>{occupiedSpot ? 'Ocupada' : 'Livre'}</Text>
+        {item.motorcycleId ? <Text style={styles.spotMotoText}>{String(item.motorcycleId)}</Text> : null}
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <View style={{ flex: 1, padding: 12, backgroundColor: colors.background }}>
       <Text style={[styles.title, { color: colors.text }]}>{sector.id}</Text>
 
-      <View
-        style={[styles.canvas, { backgroundColor: colors.input }]}
-        onLayout={(e) => setCanvasSize(e.nativeEvent.layout)}
-      >
-        {/* 🔹 Desenha POIs */}
-        {sector.pointsOfInterest?.length && scaleInfo &&
-          sector.pointsOfInterest
-            .slice()
-            .sort((a, b) => (a.pointOrder ?? 0) - (b.pointOrder ?? 0))
-            .map((p, i) => {
-              const pos = transformPoint(p.x, p.y);
-              return <View key={`poi-${i}`} style={[styles.poiDot, { left: pos.left - 4, top: pos.top - 4 }]} />;
-            })
-        }
-
-        {/* 🔹 Desenha spots */}
-        {sector.spots?.map((sp: Spots) => {
-          const pos = transformPoint(sp.x, sp.y);
-          // accept different status spellings from mocks / APIs
-          const occupied = sp.status === 'ocupada' || sp.status === 'occupied' || sp.status === 'ocupado';
-          const color = occupied ? '#e74c3c' : '#2ecc71';
-          return (
-            <View key={sp.spotId} style={[styles.spotWrapper, { left: pos.left - 12, top: pos.top - 20 }]}>
-              <View style={[styles.spotRect, { backgroundColor: color }]}>
-                {sp.motorcycleId ? (
-                  <View style={styles.spotVerticalText}>
-                    {String(sp.motorcycleId).split("").map((ch, idx) => (
-                      <Text key={idx} style={styles.spotMotorcycleText}>{ch}</Text>
-                    ))}
-                  </View>
-                ) : null}
-              </View>
-            </View>
-          );
-        })}
+      <View style={[styles.summaryRow, { backgroundColor: colors.input }]}> 
+        <Text style={[styles.summaryText, { color: colors.text }]}>Total: {total}</Text>
+        <Text style={[styles.summaryText, { color: colors.text }]}>Ocupadas: {occupied}</Text>
+        <Text style={[styles.summaryText, { color: colors.text }]}>Livres: {total - occupied}</Text>
       </View>
+
+      {total === 0 ? (
+        <View style={[styles.center, { flex: 1 }]}>
+          <Text style={{ color: colors.text }}>Nenhuma vaga cadastrada neste setor</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={spotsArray}
+          keyExtractor={(i) => String(i.spotId)}
+          renderItem={renderSpot}
+          numColumns={2}
+          columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 12 }}
+          contentContainerStyle={{ paddingVertical: 12 }}
+        />
+      )}
     </View>
   );
 }
@@ -158,10 +116,19 @@ export default function SetorSpots() {
 const styles = StyleSheet.create({
   center: { alignItems: 'center', justifyContent: 'center' },
   title: { fontSize: 18, fontWeight: '800', marginBottom: 6 },
-  canvas: { height: Math.round(Dimensions.get('window').height * 0.6), borderRadius: 8, overflow: 'hidden', position: 'relative' },
+  canvas: { borderRadius: 8, overflow: 'hidden', position: 'relative' },
   poiDot: { position: 'absolute', width: 8, height: 8, borderRadius: 4, backgroundColor: '#3498db', borderWidth: 1, borderColor: '#fff' },
   spotWrapper: { position: 'absolute' },
   spotRect: { width: 28, height: 56, borderWidth: 1, borderColor: '#ffffff', alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
   spotMotorcycleText: { color: '#fff', fontSize: 12, fontWeight: '700', textAlign: 'center', lineHeight: 14 },
   spotVerticalText: { alignItems: 'center', justifyContent: 'center' },
+
+  /* new styles for grid/list view */
+  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderRadius: 8, marginVertical: 8 },
+  summaryText: { fontSize: 14, fontWeight: '700' },
+  // use a fixed percentage width so no card takes the whole row space
+  spotCard: { width: '48%', minHeight: 84, borderRadius: 8, padding: 12, marginHorizontal: 0, alignItems: 'center', justifyContent: 'center', alignSelf: 'flex-start' },
+  spotIdText: { color: '#fff', fontSize: 16, fontWeight: '800' },
+  spotStatusText: { color: '#fff', fontSize: 12, marginTop: 6 },
+  spotMotoText: { color: '#fff', fontSize: 14, marginTop: 4, fontWeight: '700' },
 });

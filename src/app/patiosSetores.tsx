@@ -19,11 +19,12 @@ export default function PatiosSetores() {
   useEffect(() => {
     //if (!id) return;
     let mounted = true;
+  
 
     const load = async () => {
       setLoading(true);
       try {
-        const data = await setoresApi.findSetores(id);
+        const data = await setoresApi.findSetores("123cb896-b2b2-11f0-a6f4-aa8c626e8990");
         console.log(data);
         
         if (mounted) setSectors(data);
@@ -93,7 +94,6 @@ export default function PatiosSetores() {
     for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
       const xi = polygon[i].x, yi = polygon[i].y;
       const xj = polygon[j].x, yj = polygon[j].y;
-
       const intersect = ((yi > point.y) !== (yj > point.y)) &&
         (point.x < (xj - xi) * (point.y - yi) / (yj - yi + 0.0000001) + xi);
       if (intersect) inside = !inside;
