@@ -1,39 +1,71 @@
-import { Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, StatusBar, ScrollView, Image, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeContext } from "../contexts/ThemeContext";
 import ThemeToggleButton from '../components/ToggleButtonTheme';
+import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const { colors } = useThemeContext();
+  const { t, i18n } = useTranslation();
+  const [showLangMenu, setShowLangMenu] = useState(false);
+
+  const changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+    setShowLangMenu(false);
+  };
+
   return (
-    <ScrollView contentContainerStyle={[styles.container, {backgroundColor: colors.background}]}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
       <ThemeToggleButton />
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
+
+      <View style={styles.languageContainer}>
+        <TouchableOpacity
+          style={[styles.languageButton, { backgroundColor: '#32CD32' }]}
+          onPress={() => setShowLangMenu(!showLangMenu)}
+        >
+          <Text style={styles.languageButtonText}>
+            🌐 {t('home.selectLanguage')}
+          </Text>
+        </TouchableOpacity>
+
+        {showLangMenu && (
+          <View style={styles.languageMenu}>
+            <TouchableOpacity onPress={() => changeLanguage('pt')} style={styles.langOption}>
+              <Text style={styles.langText}>🇧🇷 Português</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => changeLanguage('en')} style={styles.langOption}>
+              <Text style={styles.langText}>🇺🇸 English</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => changeLanguage('es')} style={styles.langOption}>
+              <Text style={styles.langText}>🇪🇸 Español</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+
       <Image
         source={require('../assets/moto.png')}
         style={styles.logo}
         resizeMode="contain"
       />
-      <Text style={styles.title}>Bem-vindo à Mottu</Text>
-      <Text style={styles.subtitle}>Mobilidade urbana com inovação e praticidade</Text>
 
-      <Text style={styles.description}>
-        A Mottu é uma startup que oferece aluguel de motos para entregadores e autônomos. Nosso
-        objetivo é democratizar o acesso ao trabalho, fornecendo veículos confiáveis com manutenção
-        garantida e suporte ao cliente. Aqui no app, você pode cadastrar-se, visualizar motos
-        disponíveis, consultar pátios e saber mais sobre nossa equipe e missão.
-      </Text>
+      <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
+      <Text style={styles.description}>{t('home.description')}</Text>
+
       <Image
         source={require('../assets/logo_mottu.png')}
         style={styles.logo_icon}
         resizeMode="contain"
       />
+
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('cadastroUser')}
+        onPress={() => navigation.navigate('login')}
       >
-        <Text style={styles.buttonText}>Começar</Text>
+        <Text style={styles.buttonText}>{t('home.button')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -47,13 +79,44 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 24,
   },
-  title: {
-    fontSize: 32,
-    color: '#32CD32',
-    fontWeight: '900', 
-    marginBottom: 10,
+  languageContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  languageButtonText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  languageMenu: {
+    marginTop: 8,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 10,
+    padding: 8,
+    width: 200,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  langOption: {
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+  },
+  langText: {
+    color: '#ADFF2F',
+    fontSize: 16,
     textAlign: 'center',
-    fontFamily: 'System', 
   },
   subtitle: {
     fontSize: 20,

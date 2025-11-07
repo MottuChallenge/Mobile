@@ -1,0 +1,111 @@
+{
+  "home": {
+    "title": "Bienvenido a Mottu",
+    "selectLanguage": "Seleccionar idioma",
+    "subtitle": "Movilidad urbana con innovación y comodidad",
+    "description": "Mottu es una startup que ofrece alquiler de motocicletas para repartidores y trabajadores independientes. Nuestro objetivo es democratizar el acceso al trabajo proporcionando vehículos confiables con mantenimiento garantizado y atención al cliente. En esta aplicación, puedes registrarte, ver las motocicletas disponibles, consultar los patios de alquiler y conocer más sobre nuestro equipo y misión.",
+    "button": "Comenzar"
+  },
+  "cadastro": {
+    "title": "Registro de Usuario",
+    "emailPlaceholder": "Correo electrónico",
+    "passwordPlaceholder": "Contraseña",
+    "registerButton": "Registrarse",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta? Inicia sesión ahora",
+    "errors": {
+      "invalidEmail": "Por favor, introduce un correo electrónico válido.",
+      "emailRequired": "El campo de correo electrónico es obligatorio.",
+      "passwordRequired": "El campo de contraseña es obligatorio.",
+      "emailAlreadyRegistered": "Este correo electrónico ya está registrado.",
+      "networkError": "Error de red. Verifica tu conexión e inténtalo de nuevo.",
+      "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+    }
+  },
+  "login": {
+    "title": "Inicio de Sesión",
+    "emailPlaceholder": "Correo electrónico",
+    "passwordPlaceholder": "Contraseña",
+    "loginButton": "Iniciar sesión",
+    "loading": "Cargando...",
+    "registerText": "¿No tienes una cuenta? Regístrate aquí",
+    "errors": {
+      "invalidEmail": "Por favor, introduce un correo electrónico válido.",
+      "credentialsIncorrect": "Credenciales incorrectas. Verifica tu correo y contraseña.",
+      "networkError": "Error de red. Verifica tu conexión e inténtalo de nuevo.",
+      "unexpectedError": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
+      "fieldsRequired": "Por favor, completa todos los campos."
+    }
+  },
+  "paginaInicial": {
+    "title": "Registra tu Motocicleta",
+    "button": "Registrar Motocicleta",
+    "loading": "Registrando...",
+    "errors": {
+      "modelPlateRequired": "El modelo y la placa son obligatorios.",
+      "userNotLoggedIn": "Debes iniciar sesión para registrar una motocicleta.",
+      "failedRegister": "No se pudo registrar la motocicleta."
+    },
+    "success": "¡Motocicleta registrada con éxito!"
+  },
+  "listaMotos": {
+    "title": "Motocicletas Registradas",
+    "noData": "Aún no hay motocicletas registradas.",
+    "pagination": "Página {{pagina}} de {{totalPaginas}}",
+    "buttons": {
+      "previous": "⬅️ Anterior",
+      "next": "Siguiente ➡️",
+      "goToYard": "🚗 Ir al Patio",
+      "addNewMotorcycle": "🏍️ Registrar Nueva Motocicleta"
+    },
+    "modal": {
+      "title": "Editar Motocicleta",
+      "saveButton": "Guardar",
+      "cancelButton": "Cancelar",
+      "errors": {
+        "modelPlateRequired": "El modelo y la placa son obligatorios.",
+        "failedEdit": "No se pudo editar la motocicleta."
+      },
+      "loading": "Cargando..."
+    },
+    "alerts": {
+      "deleteConfirm": "¿Deseas eliminar esta motocicleta?",
+      "deleteSuccess": "¡Motocicleta eliminada con éxito!",
+      "loadError": "No se pudieron cargar las motocicletas."
+    },
+    "edit": "✏️ Editar",
+    "delete": "🗑️ Eliminar"
+  },
+  "telaMottu": {
+    "title": "¡Motocicleta Registrada!",
+    "labels": {
+      "model": "Nombre de la Motocicleta",
+      "plate": "Placa",
+      "cpf": "CPF del Propietario"
+    },
+    "noData": "SIN DATOS",
+    "goToListButton": "Ir a la Lista de Motocicletas"
+  },
+  "integrantes": {
+    "title": "Nuestro Equipo",
+    "github": "GitHub",
+    "verHash": "Página de confirmación"
+  },
+  "drawer": {
+    "home": "Inicio",
+    "register": "Registro",
+    "login": "Iniciar Sesión",
+    "registerMotorcycle": "Registrar Motocicleta",
+    "mottu": "Mottu",
+    "yards": "Patios",
+    "motorcycleList": "Lista de Motocicletas",
+    "team": "Nuestro Equipo",
+    "yardsAndSectors": "Patios y Sectores"
+  },
+  "commit": {
+    "title": "Confirmación de Versión",
+    "hash": "Hash del Commit:",
+    "copied": "¡Hash copiado al portapapeles!",
+    "tip": "Pulsa el hash para copiarlo."
+  }
+}
+

@@ -9,13 +9,13 @@ export type Motorcycle = {
     model: string;
     plate: string;
     lastRevisionDate: string;
-    engineType: string;
+    engineType: number;
     spotId?: string;
 };
 
 export type PaginatedMotorcycles = {
     items: Motorcycle[];
-    currentPage: number;
+    page: number;
     totalPages: number;
     totalItems: number;
     hasPrevious: boolean;
@@ -28,20 +28,14 @@ export const findMotorcycles = async (page = 1, pageSize = 10): Promise<Paginate
 
     try {
         const response = await axios.get(fullUrl);
-        return {
-            items: response.data.items,
-            currentPage: response.data.currentPage,
-            totalPages: response.data.totalPages,
-            totalItems: response.data.totalItems,
-            hasPrevious: response.data.hasPrevious,
-            hasNext: response.data.hasNext
-        };
+        const data = response.data;
+        return data;
     } catch (error) {
         console.error("Erro ao buscar motocicletas:", error.message);
         console.error("Detalhes do erro:", error.response?.data || error);
         return {
             items: [],
-            currentPage: page,
+            page: page,
             totalPages: 0,
             totalItems: 0,
             hasPrevious: false,

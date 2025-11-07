@@ -6,22 +6,28 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  ActivityIndicator,
-  
+  ActivityIndicator
 } from "react-native";
 import { useThemeContext } from "../contexts/ThemeContext";
 import { useFocusEffect, useRouter } from "expo-router";
-import { deleteMotorcycle, findMotorcycles, getMotorcycleById, Motorcycle, updateMotorcycle } from "../api/motos";
+import {
+  deleteMotorcycle,
+  findMotorcycles,
+  getMotorcycleById,
+  Motorcycle,
+  PaginatedMotorcycles,
+  updateMotorcycle
+} from "../api/motos";
 import EditMotorcycleModal from "../components/EditMotorcycleModal";
+import { useTranslation } from "react-i18next";
 
 export default function ListaMotos() {
   const { colors } = useThemeContext();
-  const [motos, setMotos] = useState<Motorcycle[]>([]);
+  const { t } = useTranslation();
   const [loading, setLoading] = useState<boolean>(true);
-  const [pagina, setPagina] = useState(1);
-  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [motorcyclePagination, setMotorcyclePagination] =
+    useState<PaginatedMotorcycles | null>(null);
 
-  // Estados para o modal de edição
   const [modalVisible, setModalVisible] = useState(false);
   const [editandoMoto, setEditandoMoto] = useState<Motorcycle | null>(null);
   const [loadingModal, setLoadingModal] = useState(false);
@@ -29,46 +35,53 @@ export default function ListaMotos() {
     model: "",
     plate: "",
     lastRevisionDate: "",
-    engineType: "",
+    engineType: 0
   });
 
   const router = useRouter();
 
   const deletarMoto = async (id: number) => {
     try {
-      const novasMotos = motos.filter((moto) => moto.id !== id);
       await deleteMotorcycle(id);
-      setMotos(novasMotos);
-      Alert.alert("Sucesso", "Moto deletada com sucesso!");
+      Alert.alert(t("listaMotos.alerts.deleteSuccess"));
+      carregarMotos(motorcyclePagination?.page ?? 1);
     } catch (error) {
-      console.error("Erro ao deletar moto:", error);
+      Alert.alert(t("listaMotos.alerts.loadError"));
+      console.error(error);
     }
   };
 
   const confirmarDeletarMoto = (id: number) =>
-    Alert.alert("Confirmar exclusão", "Deseja excluir esta moto?", [
-      { text: "Cancelar", style: "cancel" },
-      { text: "Excluir", style: "destructive", onPress: () => deletarMoto(id) },
-    ]);
+    Alert.alert(
+      t("listaMotos.alerts.deleteConfirm"),
+      "",
+      [
+        { text: t("listaMotos.buttons.previous"), style: "cancel" },
+        {
+          text: t("listaMotos.delete"),
+          style: "destructive",
+          onPress: () => deletarMoto(id)
+        }
+      ]
+    );
 
   const abrirModalEdicao = async (moto: Motorcycle) => {
     try {
       setLoadingModal(true);
       setModalVisible(true);
       setEditandoMoto(moto);
-      
+
       const motoCompleta = await getMotorcycleById(moto.id);
-      
       setEditFormData({
         model: motoCompleta.model || "",
         plate: motoCompleta.plate || "",
         lastRevisionDate: motoCompleta.lastRevisionDate,
-        engineType: motoCompleta.engineType?.toString() || "",
+        engineType: motoCompleta.engineType?.toString() || ""
       });
     } catch (error) {
-      console.error("Erro ao carregar dados da moto:", error);
-      Alert.alert("Erro", "Não foi possível carregar os dados da moto.");
+      Alert.alert(t("listaMotos.modal.errors.failedEdit"));
       setModalVisible(false);
+      console.error(error);
     } finally {
       setLoadingModal(false);
     }
@@ -76,31 +89,27 @@ export default function ListaMotos() {
 
   const salvarEdicao = async () => {
     if (!editFormData.model || !editFormData.plate) {
-      Alert.alert("Erro", "Modelo e placa são obrigatórios.");
+      Alert.alert(t("listaMotos.modal.errors.modelPlateRequired"));
       return;
     }
-
     if (!editandoMoto) return;
 
-    const lastRevisionDate = editFormData.lastRevisionDate ? new Date(editFormData.lastRevisionDate).toISOString() : new Date().toISOString();
+    const lastRevisionDate = editFormData.lastRevisionDate
+      ? new Date(editFormData.lastRevisionDate).toISOString()
+      : new Date().toISOString();
 
     try {
       setLoadingModal(true);
-
-      await updateMotorcycle(
-        editandoMoto.id,
-        {
-          ...editandoMoto,
-          ...editFormData,
-          lastRevisionDate
-        }
-      );
-
-      Alert.alert("Sucesso", "Moto editada com sucesso!");
+      await updateMotorcycle(editandoMoto.id, {
+        ...editandoMoto,
+        ...editFormData,
+        lastRevisionDate
+      });
+      Alert.alert(t("listaMotos.modal.saveButton"));
       setModalVisible(false);
-      carregarMotos(pagina); // Recarregar a lista
+      carregarMotos(motorcyclePagination?.page ?? 1);
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível editar a moto.");
+      Alert.alert(t("listaMotos.modal.errors.failedEdit"));
       console.error(error);
     } finally {
       setLoadingModal(false);
@@ -114,43 +123,18 @@ export default function ListaMotos() {
       model: "",
       plate: "",
       lastRevisionDate: "",
-      engineType: "",
+      engineType: 0
     });
   };
 
   const carregarMotos = async (page = 1) => {
-    setLoading(true);
     try {
+      setLoading(true);
       const resposta = await findMotorcycles(page, 5);
-      let lista = [];
-      let totalPages = 1;
-
-      if (resposta && resposta.items) {
-        lista = resposta.items;
-        totalPages = resposta.totalPages || 1;
-      } else if (Array.isArray(resposta)) {
-        // Se a API retornar array direto
-        lista = resposta;
-        totalPages = 1;
-      } else {
-        console.warn("Estrutura de resposta inesperada:", resposta);
-        lista = [];
-      }
-      
-      setTotalPaginas(totalPages);
-
-      const motosFormatadas: Motorcycle[] = lista.map((m: Motorcycle) => ({
-        id: m.id,
-        model: m.model,
-        plate: m.plate,
-        spotId: m.spotId,
-        lastRevisionDate: m.lastRevisionDate,
-        engineType: m.engineType,
-      }));
-      setMotos(motosFormatadas);
-    } catch (error) {
-      console.error("Erro ao carregar motos:", error);
-      setMotos([]);
+      setMotorcyclePagination(resposta);
+    } catch (err) {
+      Alert.alert(t("listaMotos.alerts.loadError"));
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -158,143 +142,145 @@ export default function ListaMotos() {
 
   useFocusEffect(
     useCallback(() => {
-      carregarMotos(pagina);
-    }, [pagina])
+      carregarMotos(1);
+    }, [])
   );
 
   const MotoItem = ({ moto }: { moto: Motorcycle }) => (
     <View style={styles.item}>
-      <Text style={styles.text}>🏍️ Modelo: {moto.model}</Text>
-      <Text style={styles.text}>📄 Placa: {moto.plate}</Text>
+      <Text style={styles.text}>
+        🏍️ {t("telaMottu.labels.model")}: {moto.model}
+      </Text>
+      <Text style={styles.text}>📄 {t("telaMottu.labels.plate")}: {moto.plate}</Text>
       <Text style={styles.text}>📍 Spot ID: {moto.spotId}</Text>
-      <Text style={styles.text}>🗓 Última Revisão: {moto.lastRevisionDate}</Text>
+      <Text style={styles.text}>🗓 {t("paginaInicial.loading")}: {moto.lastRevisionDate}</Text>
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginTop: 10
+        }}
+      >
         <TouchableOpacity
           style={[styles.smallButton, { backgroundColor: "#1E90FF" }]}
           onPress={() => abrirModalEdicao(moto)}
         >
-          <Text style={styles.smallButtonText}>✏️ Editar</Text>
+          <Text style={styles.smallButtonText}>
+            {t("listaMotos.edit")}
+          </Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.smallButton, { backgroundColor: "#B22222" }]}
           onPress={() => confirmarDeletarMoto(moto.id)}
         >
-          <Text style={styles.smallButtonText}>🗑️ Excluir</Text>
+          <Text style={styles.smallButtonText}>
+            {t("listaMotos.delete")}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
-  const ActionButton = ({
-    text,
-    onPress,
-    style,
-    textStyle,
-  }: {
-    text: string;
-    onPress: () => void;
-    style?: object;
-    textStyle?: object;
-  }) => (
-    <TouchableOpacity style={[styles.actionButton, style]} onPress={onPress}>
-      <Text style={[styles.actionButtonText, textStyle]}>{text}</Text>
-    </TouchableOpacity>
-  );
+  const paginaAtual = motorcyclePagination?.page ?? 1;
+  const totalPaginas = motorcyclePagination?.totalPages ?? 1;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={styles.title}>Lista de Motos Cadastradas</Text>
+      <Text style={styles.title}>{t("listaMotos.title")}</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color={colors.input} />
-      ) : motos.length === 0 ? (
-        <Text style={styles.info}>Nenhuma moto cadastrada ainda.</Text>
+      ) : !motorcyclePagination || motorcyclePagination.items.length === 0 ? (
+        <Text style={styles.info}>{t("listaMotos.noData")}</Text>
       ) : (
-        <FlatList
-          data={motos}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <MotoItem moto={item} />}
-          contentContainerStyle={{ paddingBottom: 20 }}
-        />
-      )}
-
-      {!loading && (
         <>
-          {/* Botões de paginação */}
-          <View style={styles.paginationContainer}>
-            <Text style={styles.paginationInfo}>
-              Página {pagina} de {totalPaginas}
-            </Text>
-          </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[
-                styles.actionButton,
-                { backgroundColor: pagina <= 1 ? "#666" : "#1E90FF", flex: 1, marginRight: 5 }
-              ]}
-              onPress={() => {
-                if (pagina > 1) {
-                  setPagina(pagina - 1);
-                }
-              }}
-            >
-              <Text style={[styles.actionButtonText, { fontWeight: "bold" }]}>⬅️ Anterior</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.actionButton,
-                { backgroundColor: pagina >= totalPaginas ? "#666" : "#32CD32", flex: 1, marginLeft: 5 }
-              ]}
-              onPress={() => {
-                if (pagina < totalPaginas) {
-                  setPagina(pagina + 1);
-                }
-              }}
-            >
-              <Text style={[styles.actionButtonText, { fontWeight: "bold" }]}>Próxima ➡️</Text>
-            </TouchableOpacity>
+          <View style={styles.listContainer}>
+            <FlatList
+              data={motorcyclePagination.items}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => <MotoItem moto={item} />}
+              showsVerticalScrollIndicator={true}
+            />
           </View>
 
-          {/* Botões adicionais */}
-          <View style={styles.buttonContainer}>
-            <ActionButton
-              text="🚗 Ir para o Pátio"
-              onPress={() => router.push("/patios")}
-              style={{ backgroundColor: "#1E90FF", flex: 1, marginRight: 5 }}
-            />
-            <ActionButton
-              text="🏍️ Cadastrar Nova Moto"
-              onPress={() => router.push("/cadastroMoto")}
-              style={{ backgroundColor: "#32CD32", flex: 1, marginLeft: 5 }}
-            />
+          <View style={styles.paginationSection}>
+            <Text style={styles.paginationInfo}>
+              {t("listaMotos.pagination", {
+                pagina: paginaAtual,
+                totalPaginas: totalPaginas
+              })}
+            </Text>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.actionButton,
+                  {
+                    backgroundColor: motorcyclePagination.hasPrevious
+                      ? "#1E90FF"
+                      : "#666",
+                    flex: 1,
+                    marginRight: 5
+                  }
+                ]}
+                disabled={!motorcyclePagination.hasPrevious}
+                onPress={() => {
+                  if (motorcyclePagination.hasPrevious)
+                    carregarMotos(paginaAtual - 1);
+                }}
+              >
+                <Text style={styles.actionButtonText}>
+                  {t("listaMotos.buttons.previous")}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.actionButton,
+                  {
+                    backgroundColor: motorcyclePagination.hasNext
+                      ? "#32CD32"
+                      : "#666",
+                    flex: 1,
+                    marginLeft: 5
+                  }
+                ]}
+                disabled={!motorcyclePagination.hasNext}
+                onPress={() => {
+                  if (motorcyclePagination.hasNext)
+                    carregarMotos(paginaAtual + 1);
+                }}
+              >
+                <Text style={styles.actionButtonText}>
+                  {t("listaMotos.buttons.next")}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </>
       )}
-
-      {/* Modal de Edição */}
-      <EditMotorcycleModal
-        visible={modalVisible}
-        loading={loadingModal}
-        formData={editFormData}
-        setFormData={setEditFormData}
-        onCancel={fecharModal}
-        onSave={salvarEdicao}
-      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
+  container: { 
+    flex: 1, 
+    padding: 16 
+  },
   title: {
     fontSize: 22,
     fontWeight: "bold",
     marginTop: 50,
     marginBottom: 20,
     textAlign: "center",
-    color: "#7CFC00",
+    color: "#7CFC00"
+  },
+  listContainer: {
+    flex: 1,
+    maxHeight: 600,
+    marginBottom: 20
   },
   item: {
     backgroundColor: "#111",
@@ -302,89 +288,30 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: "#7CFC00",
+    borderColor: "#7CFC00"
   },
   text: { fontSize: 16, color: "#FFF", marginBottom: 4 },
   info: { textAlign: "center", color: "#888", fontSize: 16 },
   smallButton: {
-    flex: 1,
     paddingVertical: 6,
     borderRadius: 6,
-    alignItems: "center",
+    alignItems: "center"
   },
   smallButtonText: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
-  actionButton: {
-    paddingVertical: 12,
-    borderRadius: 6,
+  paginationSection: {
     alignItems: "center",
+    marginTop: 10
   },
-  actionButtonText: { fontSize: 16, color: "#FFF", fontWeight: "bold" },
+  paginationInfo: { color: "#7CFC00", fontSize: 16, marginBottom: 10 },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
-  paginationContainer: {
-    alignItems: "center",
-    marginTop: 10,
-  },
-  paginationInfo: {
-    color: "#7CFC00",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  // Estilos do Modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
-    alignItems: "center",
+    width: "100%"
   },
-  modalContainer: {
-    backgroundColor: "#FFF",
-    margin: 20,
-    padding: 20,
-    borderRadius: 10,
-    maxHeight: "80%",
-    width: "90%",
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
-    color: "#32CD32",
-  },
-  modalInput: {
-    borderWidth: 1,
-    borderColor: "#32CD32",
-    backgroundColor: "#F8F8F8",
-    padding: 12,
-    marginBottom: 16,
+  actionButton: {
+    paddingVertical: 10,
     borderRadius: 8,
-    color: "#000",
+    alignItems: "center"
   },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-  },
-  modalButton: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    marginHorizontal: 5,
-  },
-  cancelModalButton: {
-    backgroundColor: "#B22222",
-  },
-  saveModalButton: {
-    backgroundColor: "#32CD32",
-  },
-  modalButtonText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
+  actionButtonText: { color: "#FFF", fontWeight: "bold", fontSize: 16 }
 });

@@ -1,0 +1,110 @@
+{
+  "home": {
+    "title": "Welcome to Mottu",
+    "selectLanguage": "Select language",
+    "subtitle": "Urban mobility with innovation and convenience",
+    "description": "Mottu is a startup that offers motorcycle rentals for delivery drivers and freelancers. Our goal is to democratize access to work by providing reliable vehicles with guaranteed maintenance and customer support. In this app, you can register, view available motorcycles, check rental lots, and learn more about our team and mission.",
+    "button": "Get Started"
+  },
+  "cadastro": {
+    "title": "User Registration",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "registerButton": "Register",
+    "alreadyHaveAccount": "Already have an account? Log in now",
+    "errors": {
+      "invalidEmail": "Please enter a valid email.",
+      "emailRequired": "Email field is required.",
+      "passwordRequired": "Password field is required.",
+      "emailAlreadyRegistered": "This email is already registered.",
+      "networkError": "Network error. Please check your connection and try again.",
+      "unexpectedError": "An unexpected error occurred. Please try again."
+    }
+  },
+  "login": {
+    "title": "User Login",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "loginButton": "Login",
+    "loading": "Loading...",
+    "registerText": "Don't have an account? Register here",
+    "errors": {
+      "invalidEmail": "Please enter a valid email.",
+      "credentialsIncorrect": "Incorrect credentials. Check your email and password.",
+      "networkError": "Network error. Please check your connection and try again.",
+      "unexpectedError": "An unexpected error occurred. Please try again.",
+      "fieldsRequired": "Please fill in all fields."
+    }
+  },
+  "paginaInicial": {
+    "title": "Register your Motorcycle",
+    "button": "Register Motorcycle",
+    "loading": "Registering...",
+    "errors": {
+      "modelPlateRequired": "Model and plate are required.",
+      "userNotLoggedIn": "You must be logged in to register a motorcycle.",
+      "failedRegister": "Failed to register motorcycle."
+    },
+    "success": "Motorcycle successfully registered!"
+  },
+  "listaMotos": {
+    "title": "Registered Motorcycles",
+    "noData": "No motorcycles registered yet.",
+    "pagination": "Page {{pagina}} of {{totalPaginas}}",
+    "buttons": {
+      "previous": "⬅️ Previous",
+      "next": "Next ➡️",
+      "goToYard": "🚗 Go to Yard",
+      "addNewMotorcycle": "🏍️ Register New Motorcycle"
+    },
+    "modal": {
+      "title": "Edit Motorcycle",
+      "saveButton": "Save",
+      "cancelButton": "Cancel",
+      "errors": {
+        "modelPlateRequired": "Model and plate are required.",
+        "failedEdit": "Failed to edit motorcycle."
+      },
+      "loading": "Loading..."
+    },
+    "alerts": {
+      "deleteConfirm": "Do you want to delete this motorcycle?",
+      "deleteSuccess": "Motorcycle deleted successfully!",
+      "loadError": "Failed to load motorcycles."
+    },
+    "edit": "✏️ Edit",
+    "delete": "🗑️ Delete"
+  },
+  "telaMottu": {
+    "title": "Motorcycle Registered!",
+    "labels": {
+      "model": "Motorcycle Name",
+      "plate": "Plate",
+      "cpf": "Owner CPF"
+    },
+    "noData": "NO DATA",
+    "goToListButton": "Go to Motorcycle List"
+  },
+  "integrantes": {
+    "title": "Our Team",
+    "github": "GitHub",
+    "verHash": "Commit Page"
+  },
+  "drawer": {
+    "home": "Home",
+    "register": "Register",
+    "login": "Login",
+    "registerMotorcycle": "Register Motorcycle",
+    "mottu": "Mottu",
+    "yards": "Yards",
+    "motorcycleList": "Motorcycle List",
+    "team": "Our Team",
+    "yardsAndSectors": "Yards and Sectors"
+  },
+  "commit": {
+    "title": "Latest Commit",
+    "hash": "Hash:",
+    "copied": "Hash copied!",
+    "tip": "Tap to copy the hash"
+  }
+}

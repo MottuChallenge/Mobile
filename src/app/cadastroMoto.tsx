@@ -1,40 +1,76 @@
-import { useState } from "react";
-import {Text, StyleSheet, Alert, TouchableOpacity, Image, ScrollView, Platform, View } from "react-native";
+import { useState, useEffect } from "react";
+import { Text, StyleSheet, Alert, TouchableOpacity, Image, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useThemeContext } from "../contexts/ThemeContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addMotorcycle, Motorcycle } from "../api/motos";
 import MotorcycleForm from "../components/MotorcycleForm";
+import { useTranslation } from 'react-i18next';
+import * as Notifications from "expo-notifications";
+
+// 🔔 Configuração global do comportamento das notificações
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function PaginaInicial() {
+  const { t } = useTranslation();
   const [modelo, setModelo] = useState("");
   const [placa, setPlaca] = useState("");
   const [spotId, setSpotId] = useState(""); 
   const [lastRevisionDate, setLastRevisionDate] = useState("");
-  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [engineType, setEngineType] = useState("");
   const [loading, setLoading] = useState(false);
   const { colors } = useThemeContext();
   const router = useRouter();
 
+  useEffect(() => {
+    const requestPermission = async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Permissão necessária", "Ative as notificações para receber alertas importantes.");
+      }
+    };
+    requestPermission();
+  }, []);
+
+  const disparaNotificacao = async () => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Moto cadastrada com sucesso! 🏍️",
+        body: "Sua moto foi registrada no sistema.",
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 2,
+        repeats: false,
+      } as Notifications.TimeIntervalTriggerInput,
+    });
+  };
+
   const verificarUsuario = async () => {
     try {
       const user = await AsyncStorage.getItem("@user");
       if (!user) {
-        Alert.alert("Erro", "Você precisa estar logado para cadastrar a moto.");
+        Alert.alert(t('paginaInicial.errors.userNotLoggedIn'));
         router.push("/login"); 
         return false;
       }
       return true;
     } catch (error) {
-      Alert.alert("Erro", "Ocorreu um erro ao verificar o usuário.");
+      Alert.alert(t('paginaInicial.errors.unexpectedError'));
       return false;
     }
   };
 
   const cadastrarMoto = async () => {
     if (!modelo || !placa) {
-      Alert.alert("Erro", "Modelo e placa são obrigatórios.");
+      Alert.alert(t('paginaInicial.errors.modelAndPlateRequired'));
       return;
     }
 
@@ -44,35 +80,31 @@ export default function PaginaInicial() {
     setLoading(true);
 
     try {
-      let dataRevisao: string | null = null;
-      if (lastRevisionDate && lastRevisionDate.trim() !== "") {
-        dataRevisao = new Date(lastRevisionDate).toISOString();
-      } else {
-        dataRevisao = new Date(Date.now()).toISOString();
-      }
-      let spotIdMotorcycle: string | null = spotId;
-      if(spotId && spotId.trim() === "") {
-        spotIdMotorcycle = null;
-      }
+      let dataRevisao = lastRevisionDate?.trim() ? new Date(lastRevisionDate).toISOString() : new Date().toISOString();
+      const spotIdMotorcycle = spotId?.trim() || null;
+
       const motorcycle: Motorcycle = {
         model: modelo,
         plate: placa,
         spotId: spotIdMotorcycle,
         lastRevisionDate: dataRevisao,
-        engineType: engineType
+        engineType: Number.parseInt(engineType),
       };
 
       await addMotorcycle(motorcycle);
 
-      Alert.alert("Sucesso", "Moto cadastrada com sucesso!");
+      // ✅ Dispara a notificação após o sucesso
+      await disparaNotificacao();
+
+      Alert.alert(t('paginaInicial.success'), t('paginaInicial.success'));
       setModelo("");
       setPlaca("");
       setSpotId("");
       setLastRevisionDate("");
       setEngineType("");
-      router.push("/mottu");
+      router.push("/listamotos");
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível cadastrar a moto.");
+      Alert.alert(t('paginaInicial.errors.unexpectedError'));
       console.error(error);
     } finally {
       setLoading(false);
@@ -81,15 +113,17 @@ export default function PaginaInicial() {
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
-      <Image
-        source={require('../assets/logo_mottu.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      <Text style={styles.title}>Registre a sua Moto</Text>
+      <Image source={require('../assets/logo_mottu.png')} style={styles.logo} resizeMode="contain" />
+      <Text style={styles.title}>{t('paginaInicial.title')}</Text>
 
       <MotorcycleForm
-        formData={{ model: modelo, plate: placa, spotId: spotId, lastRevisionDate: lastRevisionDate, engineType: engineType }}
+        formData={{
+          model: modelo,
+          plate: placa,
+          spotId: spotId,
+          lastRevisionDate: lastRevisionDate,
+          engineType: engineType
+        }}
         setFormData={(fd) => {
           setModelo(fd.model);
           setPlaca(fd.plate);
@@ -102,7 +136,9 @@ export default function PaginaInicial() {
       />
 
       <TouchableOpacity style={styles.button} onPress={cadastrarMoto} disabled={loading}>
-        <Text style={styles.buttonText}>{loading ? "Cadastrando..." : "Cadastrar Moto"}</Text>
+        <Text style={styles.buttonText}>
+          {loading ? t('paginaInicial.loading') : t('paginaInicial.button')}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
