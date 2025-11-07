@@ -1,12 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useThemeContext } from '../contexts/ThemeContext';
 import { Sector, Spots } from '../api/interfaces/isetoresApi';
 import { createSetoresApi } from '../api/factory/apiFactory';
 
 export default function SetorSpots() {
   const { yardId, sectorId } = useLocalSearchParams() as { yardId?: string; sectorId?: string };
+  const router = useRouter();
   const { colors } = useThemeContext();
 
   const [loading, setLoading] = useState(true);
@@ -86,14 +88,28 @@ export default function SetorSpots() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 12, backgroundColor: colors.background }}>
-      <Text style={[styles.title, { color: colors.text }]}>{sector.id}</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={{ flex: 1, padding: 12 }}>
+        <View style={[styles.header, { marginTop: 8 }]}> 
+          <TouchableOpacity
+            onPress={() => { console.log('back pressed'); router.navigate("patiosSetores"); }}
+            style={styles.backButton}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            accessibilityRole="button"
+          >
+            <Text style={[styles.backText, { color: colors.text }]}>‹ Voltar</Text>
+          </TouchableOpacity>
 
-      <View style={[styles.summaryRow, { backgroundColor: colors.input }]}> 
-        <Text style={[styles.summaryText, { color: colors.text }]}>Total: {total}</Text>
-        <Text style={[styles.summaryText, { color: colors.text }]}>Ocupadas: {occupied}</Text>
-        <Text style={[styles.summaryText, { color: colors.text }]}>Livres: {total - occupied}</Text>
-      </View>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{sector.id}</Text>
+
+          <View style={{ width: 64 }} />
+        </View>
+
+        <View style={[styles.summaryRow, { backgroundColor: colors.input }]}> 
+          <Text style={[styles.summaryText, { color: colors.text }]}>Total: {total}</Text>
+          <Text style={[styles.summaryText, { color: colors.text }]}>Ocupadas: {occupied}</Text>
+          <Text style={[styles.summaryText, { color: colors.text }]}>Livres: {total - occupied}</Text>
+        </View>
 
       {total === 0 ? (
         <View style={[styles.center, { flex: 1 }]}>
@@ -109,7 +125,8 @@ export default function SetorSpots() {
           contentContainerStyle={{ paddingVertical: 12 }}
         />
       )}
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -131,4 +148,8 @@ const styles = StyleSheet.create({
   spotIdText: { color: '#fff', fontSize: 16, fontWeight: '800' },
   spotStatusText: { color: '#fff', fontSize: 12, marginTop: 6 },
   spotMotoText: { color: '#fff', fontSize: 14, marginTop: 4, fontWeight: '700' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  backButton: { paddingHorizontal: 8, paddingVertical: 6 },
+  backText: { fontSize: 14, fontWeight: '700' },
+  headerTitle: { fontSize: 18, fontWeight: '900' },
 });
