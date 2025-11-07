@@ -6,4 +6,8 @@ export class SetoresApiMock implements ISetoresApi {
     console.log("🧩 Usando mock de setores");
     return setoresMock;
   }
+  public async findSetorById(sectorId: string): Promise<Sector | null> {
+    console.log("🧩 Usando mock de setor por ID");
+    return setoresMock[0]
+  }
 }
