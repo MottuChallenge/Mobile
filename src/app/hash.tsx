@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 export default function CommitPage() {
   const { colors } = useThemeContext();
   const { t } = useTranslation();
-  const commitHash = "6ef1423e1b5783e3c05f08e422d63d5ec387a567";
+  const commitHash = "d4b29e5ab8a5bf85628fb90cca6ea7f1dd83bfb3";
 
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(commitHash);
